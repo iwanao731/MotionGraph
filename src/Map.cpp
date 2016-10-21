@@ -45,8 +45,8 @@ void Map::compareMotions(Motion &m1, Motion &m2)
     float **map;
     
     this->mRelations[this->mNRelations] = new string [2];
-    this->mRelations[this->mNRelations][0] = m1.getLabelPtr();
-    this->mRelations[this->mNRelations][1] = m2.getLabelPtr();
+    this->mRelations[this->mNRelations][0] = m1.getLabel();
+    this->mRelations[this->mNRelations][1] = m2.getLabel();
     
     map = new float *[m1.getNFrames()];
     for(int i = 0 ; i < m1.getNFrames() ; i++) {
