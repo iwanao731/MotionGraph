@@ -10,9 +10,10 @@
 #include "Edge.h"
 #include <iostream>
 
+using namespace Euclid;
+
 Node::Node()
 {
-    this->mNEdge = 0;
     this->mNodeID = -1;
     this->mFrameID = -1;
     this->mEndFrameID = -1;
@@ -20,7 +21,6 @@ Node::Node()
 
 Node::Node(const int id)
 {
-    this->mNEdge = 0;
     this->mNodeID = id;
     this->mFrameID = -1;
     this->mEndFrameID = -1;
@@ -31,21 +31,66 @@ Node::~Node()
     
 }
 
-int Node::getNumEdges()
+void Node::setNodeID(const int index)
 {
-    this->mNEdge = this->mEdges.size();
-    return this->mNEdge;
+    this->mNodeID = index;
+}
+
+void Node::setFrameID(const int frameID)
+{
+    this->mFrameID = frameID;
+}
+
+void Node::setMotionID(const int motionID)
+{
+    this->mMotionID = motionID;
+}
+
+void Node::setMotionLabel(const std::string& label)
+{
+    this->mMotionLabel = label;
+}
+
+const int Node::getNodeID() const
+{
+    return this->mNodeID;
+}
+
+const int Node::getNumEdges() const
+{
+    return this->mEdges.size();
+}
+
+const int Node::getFrameID() const
+{
+    return this->mFrameID;
+}
+
+const int Node::getMotionID() const
+{
+    return this->mMotionID;
+}
+
+const std::string& Node::getMotionLabel() const
+{
+    return this->mMotionLabel;
+}
+
+Edge *Node::getEdge(const unsigned int index)
+{
+    if(index > this->getNumEdges()) return NULL;
+    
+    return &this->mEdges[index];
 }
 
 void Node::removeEdge(const int index)
 {
-    if(this->mEdges.size()>index) {
+    if(this->getNumEdges() > index) {
         this->mEdges.erase(this->mEdges.begin() + index);
     }
 }
 
-using namespace std;
-int Node::addEdge(Edge *edge)
+const int Node::addEdge(Edge *edge)
 {
     if(!edge) return -1;
     
@@ -62,19 +107,10 @@ int Node::addEdge(Edge *edge)
     if(bEdge == true) {
         edge->setStartNode(this);
         this->mEdges.push_back(*edge);
-        this->mNEdge++;
-        return this->mNEdge;
+        return this->getNumEdges();
     }else{
         return -1;
     }
-}
-    
-    
-Edge *Node::getEdge(const unsigned int index)
-{
-    if(index > this->mNEdge) return NULL;
-    
-    return &this->mEdges[index];
 }
 
 void Node::insertNode(const int motionID, const int frameID)
