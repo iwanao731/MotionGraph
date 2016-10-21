@@ -171,8 +171,8 @@ void Graph::constructGraph(std::vector<Motion> motions, const int nMotions, cons
     this->mMap->constructMap(motions, nMotions); // also export each map file.
 
     for(int i=0 ; i<this->mMap->getNRelations(); i++){
-        std::string label1 = *this->mMap->getRelations(i, 0);
-        std::string label2 = *this->mMap->getRelations(i, 1);
+        std::string label1 = this->mMap->getRelations(i, 0);
+        std::string label2 = this->mMap->getRelations(i, 1);
         
         int index1 = -1, index2 = -1;
         
