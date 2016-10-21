@@ -2,16 +2,12 @@
 #include "Motion.h"
 #include "BVHConverter.h"
 
-std::vector<std::string> split(const std::string &str, char sep);
-void loadMotion(const string filename, Motion &motion);
-
-ofVec2f mousePos;
-int motionIndex = 0;
-
 //--------------------------------------------------------------
 void ofApp::setup(){
     
     ofSetFrameRate(60.f);
+    
+    mMotionIndex = 0;
     
     // Load Motion Dataset
     ofDirectory dir;
@@ -19,46 +15,46 @@ void ofApp::setup(){
     for(int i=0; i<dir.size(); i++){
         Motion motion;
         loadMotion(dir.getPath(i), motion);
-        motion_graph.addMotion(motion);
+        mMotionGraph.addMotion(motion);
     }
     
-    motion_graph.constructGraph(Threshold(2000.f), NCoincidents(5));
-    motion_graph.exportGraph("graph.txt");
+    mMotionGraph.constructGraph(Threshold(2000.f), NCoincidents(5));
+    mMotionGraph.exportGraph("graph.txt");
     
     // motion_graph.LoadGraph("graph.txt");
     // motion_graph.saveImage("file.png");
     //mgPlayer.load("graph.txt");
     
-    mgPlayer.set(motion_graph);
-    mgPlayer.play();
+    mMGPlayer.set(mMotionGraph);
+    mMGPlayer.play();
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    mgPlayer.update();
+    mMGPlayer.update();
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    motion_graph.draw(mousePos.x, mousePos.y);
+    mMotionGraph.draw(ofGetMouseX()/100.f, ofGetMouseY());
     
     ofEnableDepthTest();
     ofEnableLighting();
-    light.enable();
-    light.setPosition(cam.getPosition());
+    mLight.enable();
+    mLight.setPosition(mCam.getPosition());
     
     ofSetColor(255);
-    cam.begin();
+    mCam.begin();
     
-    mgPlayer.draw();
+    mMGPlayer.draw();
     
-    cam.end();
+    mCam.end();
     
     ofDisableLighting();
     ofDisableDepthTest();
     
     ofSetColor(0);
-    ofDrawBitmapString("motion number : " + ofToString(mgPlayer.getCurrentMotionIndex()), ofGetWidth()-200, ofGetHeight()-40);
+    ofDrawBitmapString("motion number : " + ofToString(mMGPlayer.getCurrentMotionIndex()), ofGetWidth()-200, ofGetHeight()-40);
 }
 
 //--------------------------------------------------------------
@@ -69,30 +65,30 @@ void ofApp::keyPressed(int key){
             break;
         case ' ':
         {
-            if(mgPlayer.isPlaying())
-                mgPlayer.stop();
+            if(mMGPlayer.isPlaying())
+                mMGPlayer.stop();
             else
-                mgPlayer.play();
+                mMGPlayer.play();
             break;
         }
         case OF_KEY_LEFT:
         {
-            motionIndex--;
-            if(motionIndex < 0)
-                motionIndex = 0;
+            mMotionIndex--;
+            if(mMotionIndex < 0)
+                mMotionIndex = 0;
 
-            mgPlayer.selectMotion(motionIndex);
-            mgPlayer.play();
+            mMGPlayer.selectMotion(mMotionIndex);
+            mMGPlayer.play();
             break;
         }
         case OF_KEY_RIGHT:
         {
-            motionIndex++;
-            if (motionIndex == mgPlayer.getNumMotions())
-                motionIndex = 0;
+            mMotionIndex++;
+            if (mMotionIndex == mMGPlayer.getNumMotions())
+                mMotionIndex = 0;
             
-            mgPlayer.selectMotion(motionIndex);
-            mgPlayer.play();
+            mMGPlayer.selectMotion(mMotionIndex);
+            mMGPlayer.play();
             break;
         }
         default:
@@ -107,7 +103,7 @@ void ofApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-    mousePos.set((float)x/100.f,y);
+    
 }
 
 //--------------------------------------------------------------
@@ -151,32 +147,19 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 }
 
 //--------------------------------------------------------------
-void loadMotion(const string filename, Motion &motion)
+void ofApp::loadMotion(const string& filepath, Motion &motion)
 {
     // Load BVH
     mlib::ofxDigitalDanceBvh bvh;
-    bvh.load(filename);
+    bvh.load(filepath);
     
     // Convert Motion
     motion = BVHConverter::ToMotion(bvh);
     
-    // Set Label
-    std::vector<std::string> hierarchy = split(filename, '/');
-    std::vector<std::string> name = split(hierarchy.back(), '.');
-    motion.setLabel(name[0]);
-    motion.setFilePath(filename);
-    
+    // Set Label and path
+    ofFilePath path;
+    std::string name = path.removeExt(path.getFileName(filepath));
+    motion.setLabel(name);
+    motion.setFilePath(filepath);
     motion.printInfo();
-}
-
-//--------------------------------------------------------------
-std::vector<std::string> split(const std::string &str, char sep)
-{
-    std::vector<std::string> v;
-    std::stringstream ss(str);
-    std::string buffer;
-    while( std::getline(ss, buffer, sep) ) {
-        v.push_back(buffer);
-    }
-    return v;
 }

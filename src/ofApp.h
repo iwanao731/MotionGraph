@@ -24,10 +24,11 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
-        ofEasyCam cam;
-        ofLight light;
-        MotionGraph motion_graph;
-        MotionGraphPlayer mgPlayer;
+        int mMotionIndex;
+        ofEasyCam mCam;
+        ofLight mLight;
+        MotionGraph mMotionGraph;
+        MotionGraphPlayer mMGPlayer;
     
-        int motionIndex;
+        void loadMotion(const string& filepath, Motion &motion);
 };
