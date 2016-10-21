@@ -6,8 +6,8 @@
 //
 //
 
-#ifndef ____Edge__
-#define ____Edge__
+#ifndef ____Euclid__Edge____
+#define ____Euclid__Edge____
 
 #include <stdio.h>
 #include <string>
@@ -39,4 +39,4 @@ namespace Euclid
         
     };
 }
-#endif /* defined(____Edge__) */
+#endif /* defined(____Euclid__Edge____) */

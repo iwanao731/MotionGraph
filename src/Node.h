@@ -6,8 +6,8 @@
 //
 //
 
-#ifndef ____Node__
-#define ____Node__
+#ifndef ____Euclid__Node____
+#define ____Euclid__Node____
 
 #include <stdio.h>
 #include <vector>
@@ -51,4 +51,4 @@ namespace Euclid
         std::vector<Edge> mEdges;
     };
 }
-#endif /* defined(____Node__) */
+#endif /* defined(____Euclid__Node____) */
