@@ -18,13 +18,13 @@ Euclid::Motion::~Motion()
     
 }
 
-Pose& Euclid::Motion::getPose(const int& i)
+Pose& Euclid::Motion::getPose(const int i)
 {
     assert(i < this->mNFrames);
     return this->mPoses[i];
 }
 
-void Euclid::Motion::setPoses(const std::vector<Pose>& poses, const int& nFrames)
+void Euclid::Motion::setPoses(const std::vector<Pose>& poses, const int nFrames)
 {
     this->mPoses = std::move(poses);    // poses is now valid but unspecified (C++11)
     this->mNFrames = nFrames;
