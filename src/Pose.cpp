@@ -18,12 +18,22 @@ Pose::~Pose()
     
 }
 
-void Pose::addPoint(float x, float y, float z)
+void Pose::addPoint(const float& x, const float& y, const float& z)
 {
     this->mPose.push_back(Point3D(x,y,z));
 }
 
-void Pose::addPoint(Point3D pos)
+void Pose::addPoint(const Point3D& pos)
 {
     this->mPose.push_back(pos);
+}
+
+const int Pose::getNPoints() const
+{
+    return this->mPose.size();
+}
+
+const Point3D Pose::getPoint(const int index) const
+{
+    return this->mPose[index];
 }

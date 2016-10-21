@@ -18,11 +18,11 @@ class Pose
 public:
     Pose();
     ~Pose();
-    void addPoint(float x, float y, float z);
-    void addPoint(Point3D pos);
+    void addPoint(const float& x, const float& y, const float& z);
+    void addPoint(const Point3D& pos);
     
-    int getNPoints() { return mPose.size(); }
-    Point3D getPoint(const int index) { return mPose[index]; }
+    const int getNPoints() const;
+    const Point3D getPoint(const int index) const;
     
 private:
     vector<Point3D> mPose;
