@@ -26,21 +26,20 @@ public:
     MotionGraph();
     ~MotionGraph();
     
-    void addMotion(Motion motion);
-    //Motion *getMotion(const std::string name);
+    void addMotion(const Motion& motion);
     
     // Motion Graph Function
     void constructGraph(Threshold threshold, NCoincidents nCoincidents);
     Graph *prune();
     
     // utility function
-    void draw(const float wScale, const float hScale);
-    bool LoadGraph(const std::string filename);
-    void exportGraph(const std::string filename);
+    void draw(const float& wScale, const float& hScale);
+    bool LoadGraph(const std::string& filename);
+    void exportGraph(const std::string& filename);
     
-    Motion *getMotion(const int index);
-    int getNumMotion();
-    bool isExistMotion(const int index);
+    Motion *getMotion(const int& index);
+    const int getNumMotion() const;
+    bool isExistMotion(const int& index);
     Graph *getGraph() { return mGraph; };
     
 protected:

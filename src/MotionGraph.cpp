@@ -18,7 +18,7 @@ MotionGraph::~MotionGraph()
     
 }
 
-void MotionGraph::addMotion(Motion motion)
+void MotionGraph::addMotion(const Motion& motion)
 {
     this->mMotions.push_back(motion);
     this->mAnimCount++;
@@ -37,12 +37,12 @@ void MotionGraph::constructGraph(Threshold threshold, NCoincidents nCoincidents)
     std::cout << "end construct graph" << std::endl;
 }
 
-void MotionGraph::draw(const float wScale, const float hScale)
+void MotionGraph::draw(const float& wScale, const float& hScale)
 {
     this->mGraph->draw(wScale, hScale);
 }
 
-bool MotionGraph::LoadGraph(const std::string filename)
+bool MotionGraph::LoadGraph(const std::string& filename)
 {
     cout << "Load Graph : " << filename << endl;
 
@@ -129,7 +129,7 @@ bool MotionGraph::LoadGraph(const std::string filename)
     }
 }
 
-void MotionGraph::exportGraph(const std::string filename)
+void MotionGraph::exportGraph(const std::string& filename)
 {
     std::vector<std::string> motion_filepaths;
     for(int i=0; i<this->mMotions.size(); i++){
@@ -151,7 +151,7 @@ Graph *MotionGraph::prune()
     }
 }
 
-bool MotionGraph::isExistMotion(const int index)
+bool MotionGraph::isExistMotion(const int& index)
 {
     if(index < this->mMotions.size())
         return true;
@@ -161,7 +161,7 @@ bool MotionGraph::isExistMotion(const int index)
     }
 }
 
-Motion *MotionGraph::getMotion(const int index)
+Motion *MotionGraph::getMotion(const int& index)
 {
     if(this->isExistMotion(index))
         return &this->mMotions.at(index);
@@ -169,7 +169,7 @@ Motion *MotionGraph::getMotion(const int index)
         return 0;
 }
 
-int MotionGraph::getNumMotion()
+const int MotionGraph::getNumMotion() const
 {
     return this->mMotions.size();
 }
