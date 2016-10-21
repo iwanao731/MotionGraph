@@ -18,7 +18,7 @@ Map::Map(const int nMotions)
     this->mNRelations = 0;
     this->mMaxRelations = nMotions * nMotions; /* * 2 */
     this->mDifferenceMap = new float **[this->mMaxRelations];
-    this->mRelations =  new std::string **[this->mMaxRelations];
+    this->mRelations =  new std::string *[this->mMaxRelations];
 }
 
 Map::~Map()
@@ -44,7 +44,7 @@ void Map::compareMotions(Motion &m1, Motion &m2)
 {
     float **map;
     
-    this->mRelations[this->mNRelations] = new string *[2];
+    this->mRelations[this->mNRelations] = new string [2];
     this->mRelations[this->mNRelations][0] = m1.getLabelPtr();
     this->mRelations[this->mNRelations][1] = m2.getLabelPtr();
     
@@ -196,8 +196,8 @@ int Map::getMinimums(const int level, std::vector<int> *m1, std::vector<int> *m2
     
     this->mMotions[level].getNFrames();
     cout << "------" << endl;
-    cout << *this->getRelations(level, 0) << endl;
-    cout << *this->getRelations(level, 1) << endl;
+    cout << this->getRelations(level, 0) << endl;
+    cout << this->getRelations(level, 1) << endl;
     
     map<std::string, Motion> names;
     
@@ -205,11 +205,11 @@ int Map::getMinimums(const int level, std::vector<int> *m1, std::vector<int> *m2
     int index1, index2;
     
     for(auto m : mMotions) {
-        if((*this->getRelations(level, 0)) == m.getLabel()) {
+        if((this->getRelations(level, 0)) == m.getLabel()) {
             index1 = i;
         }
         
-        if(*this->getRelations(level, 1) == m.getLabel()) {
+        if(this->getRelations(level, 1) == m.getLabel()) {
             index2 = i;
         }
         i++;
@@ -218,8 +218,8 @@ int Map::getMinimums(const int level, std::vector<int> *m1, std::vector<int> *m2
     np1 = this->mMotions.at(index1).getNFrames();
     np2 = this->mMotions.at(index2).getNFrames();
     
-    std::string s1 = *this->getRelations(level, 0);
-    std::string s2 = *this->getRelations(level, 1);
+    std::string s1 = this->getRelations(level, 0);
+    std::string s2 = this->getRelations(level, 1);
 
 #if 1
     bool **transPoint;

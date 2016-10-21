@@ -30,7 +30,7 @@ public:
     int getNSteps() { return this->mNSteps; }
     int getNRelations() { return this->mNRelations; }
     float getThreshold() { return this->mThreshold; }
-    string *getRelations(const int i, const int j){ return mRelations[i][j]; }
+    string getRelations(const int i, const int j){ return mRelations[i][j]; }
     
     void constructMap(std::vector<Motion> motions, const int nMotions);
     void compareMotions(Motion &m1, Motion &m2);
@@ -47,7 +47,7 @@ private:
     int mNSteps;
     float mThreshold;
     float ***mDifferenceMap;
-    std::string ***mRelations;
+    std::string **mRelations;
     std::vector<Motion> mMotions;
     
     ofstream ofs;
