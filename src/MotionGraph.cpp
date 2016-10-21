@@ -24,7 +24,7 @@ void MotionGraph::addMotion(const Motion& motion)
     this->mAnimCount++;
 }
 
-void MotionGraph::constructGraph(Threshold threshold, NCoincidents nCoincidents)
+void MotionGraph::constructGraph(const Threshold& threshold, const NCoincidents& nCoincidents)
 {
     std::cout << "start construct graph" << std::endl;
     
@@ -140,18 +140,10 @@ void MotionGraph::exportGraph(const std::string& filename)
 
 Graph *MotionGraph::prune()
 {
-    int numNode = this->mGraph->getNumNodes();
-    for(int i=0; i<numNode; i++) {
-        this->mGraph->getNode(i)->getMotionLabel();
-        this->mGraph->getNode(i)->getFrameID();
-        int numEdges = this->mGraph->getNode(i)->getNumEdges();
-        for(int j=0; j<numEdges; j++) {
-            Node *nextNode = this->mGraph->getNode(i)->getEdge(j)->getDestination();
-        }
-    }
+
 }
 
-bool MotionGraph::isExistMotion(const int& index)
+bool MotionGraph::isExistMotion(const int index) const
 {
     if(index < this->mMotions.size())
         return true;
@@ -161,7 +153,7 @@ bool MotionGraph::isExistMotion(const int& index)
     }
 }
 
-Motion *MotionGraph::getMotion(const int& index)
+Motion *MotionGraph::getMotion(const int index)
 {
     if(this->isExistMotion(index))
         return &this->mMotions.at(index);
