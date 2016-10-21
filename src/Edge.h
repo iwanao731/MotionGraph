@@ -12,29 +12,31 @@
 #include <stdio.h>
 #include <string>
 
-class Node;
-
-class Edge
+namespace Euclid
 {
-public:
-    Edge();
-    Edge(Node *n, std::string label);
-    ~Edge();
-    
-    void setLabel(const std::string name) { this->mLabel = name; }
-    void setDestination(Node *node) { this->dest = node; }
-    void setStartNode(Node *node) { this->start = node; }
-    
-    std::string getLabel() { return this->mLabel; }
-    Node *getDestination() { return this->dest; }
-    Node *getStartNode() { return this->start; }
-        
-private:
-    Node *start;
-    Node *dest;
-    std::string mLabel;
-    int mInit1, mInit2, mEnd1, mEnd2;
-    
-};
+    class Node;
 
+    class Edge
+    {
+    public:
+        Edge();
+        Edge(Node *n, const std::string& label);
+        ~Edge();
+        
+        void setLabel(const std::string& name);
+        void setDestination(Node *node);
+        void setStartNode(Node *node);
+        
+        const std::string& getLabel() const;
+        Node *getDestination() const;
+        Node *getStartNode() const;
+            
+    private:
+        Node *mStart;
+        Node *mDest;
+        std::string mLabel;
+        int mInit1, mInit2, mEnd1, mEnd2;
+        
+    };
+}
 #endif /* defined(____Edge__) */
