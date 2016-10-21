@@ -8,6 +8,8 @@
 
 #include "Pose.h"
 
+using namespace Euclid;
+
 Pose::Pose()
 {
     
@@ -33,7 +35,7 @@ const int Pose::getNPoints() const
     return this->mPose.size();
 }
 
-const Point3D Pose::getPoint(const int index) const
+const Point3D& Pose::getPoint(const int index) const
 {
     return this->mPose[index];
 }

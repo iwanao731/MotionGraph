@@ -6,8 +6,8 @@
 //
 //
 
-#ifndef ____Map__
-#define ____Map__
+#ifndef ____Euclid__Map____
+#define ____Euclid__Map____
 
 #include <stdio.h>
 #include <vector>
@@ -23,23 +23,23 @@ public:
     Map(const int nMotions);
     ~Map();
     
-    void setNSteps(const int step) { this->mNSteps = step; }
-    void setNRelations(const int n) { this->mNRelations = n; }
-    void setThreshold(const float threshold) { this->mThreshold = threshold; }
+    void setNSteps(const int step);
+    void setNRelations(const int n);
+    void setThreshold(const float& threshold);
     
-    int getNSteps() { return this->mNSteps; }
-    int getNRelations() { return this->mNRelations; }
-    float getThreshold() { return this->mThreshold; }
-    string getRelations(const int i, const int j){ return mRelations[i][j]; }
+    const int getNSteps() const;
+    const int getNRelations() const;
+    const int getNMotions() const;
+    const float& getThreshold() const;
+    const std::string& getRelations(const int i, const int j) const;
+    const Motion& getMotion(const int index) const;
     
-    void constructMap(std::vector<Motion> motions, const int nMotions);
-    void compareMotions(Motion &m1, Motion &m2);
-    float comparePoses(Pose &pose1, Pose &pose2);
+    void constructMap(const std::vector<Motion>& motions, const int nMotions);
+    void compareMotions(Motion& m1, Motion& m2);
+    const float& comparePoses(const Pose& pose1, const Pose& pose2);
 
-    int getMinimums(const int level, std::vector<int> *m1, std::vector<int> *m2);
-    void exportMapFile(float **map, Motion &m1, Motion &m2);
-    Motion getMotion(const int index) { return this->mMotions[index]; }
-    int getNMotions() { return mMotions.size(); }
+    const int calcMinimums(const int level, std::vector<int>& m1, std::vector<int>& m2);
+    void exportMapFile(float **map, const Motion& m1, const Motion& m2);
 
 private:
     int mNRelations;
@@ -50,10 +50,8 @@ private:
     std::string **mRelations;
     std::vector<Motion> mMotions;
     
-    ofstream ofs;
     void calcLocalMinimum(bool **transPoint, const int motionIndex, const int i, const int j, const int range, const int sizeW, const int sizeH);
-    //void saveImage(float **map, Motion &m1, Motion &m2);
-    void saveImage(bool **BMap, float **map, Motion &m1, Motion &m2);
+    void saveImage(bool **BMap, float **map, const Motion& m1, const Motion& m2);
 };
 
-#endif /* defined(____Map__) */
+#endif /* defined(____Euclid__Map____) */

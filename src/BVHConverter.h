@@ -6,17 +6,17 @@
 //
 //
 
-#ifndef ____BVH2MotionAdapter__
-#define ____BVH2MotionAdapter__
+#ifndef ____BVHConverter__
+#define ____BVHConverter__
 
 #include <stdio.h>
 #include "ofxDigitalDance.h"
 #include "Motion.h"
 #include "Pose.h"
 
-namespace BVHConverter
+namespace Euclid
 {
-    void ToMotion(mlib::ofxDigitalDanceBvh& bvh, Euclid::Motion& motion);
+    void BvhToMotion(mlib::ofxDigitalDanceBvh& bvh, Euclid::Motion& motion);
 };
 
-#endif /* defined(____BVH2MotionAdapter__) */
+#endif /* defined(BVHConverter) */

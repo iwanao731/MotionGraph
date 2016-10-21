@@ -40,7 +40,7 @@ const std::string& Motion::getFilePath() const
     return this->mFilePath;
 }
 
-Pose& Motion::getPose(const int i)
+const Pose& Motion::getPose(const int i)
 {
     assert(i < this->mNFrames);
     return this->mPoses[i];

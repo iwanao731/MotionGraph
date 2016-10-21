@@ -8,7 +8,9 @@
 
 #include "BVHConverter.h"
 
-void BVHConverter::ToMotion(mlib::ofxDigitalDanceBvh& bvh, Euclid::Motion& motion)
+using namespace Euclid;
+
+void Euclid::BvhToMotion(mlib::ofxDigitalDanceBvh& bvh, Euclid::Motion& motion)
 {
     int numFrames = bvh.getNumFrames();
     motion.setNFrames(numFrames);

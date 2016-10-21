@@ -16,6 +16,7 @@
 #include "ofxDigitalDanceBvh.h"
 
 using namespace mlib;
+using namespace Euclid;
 
 struct MotionInfo {
     int mFrame;

@@ -8,6 +8,8 @@
 
 #include "Point3D.h"
 
+using namespace Euclid;
+
 Point3D::Point3D()
 {
     this->mWeight = 1.0f;
@@ -59,27 +61,27 @@ void Point3D::setPosition(const ofPoint& p)
     this->mPos = p;
 }
 
-const float Point3D::getX() const
+const float& Point3D::getX() const
 {
     return this->mPos.x;
 }
 
-const float Point3D::getY() const
+const float& Point3D::getY() const
 {
     return this->mPos.y;
 }
 
-const float Point3D::getZ() const
+const float& Point3D::getZ() const
 {
     return this->mPos.z;
 }
 
-const float Point3D::getWeight() const
+const float& Point3D::getWeight() const
 {
     return this->mWeight;
 }
 
-const ofPoint Point3D::getPosition() const
+const ofPoint& Point3D::getPosition() const
 {
     return mPos;
 }

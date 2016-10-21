@@ -8,6 +8,8 @@
 
 #include "Graph.h"
 
+using namespace Euclid;
+
 Graph::Graph()
 {
     this->mIndices = NULL;
@@ -78,7 +80,7 @@ void Graph::constructGraph(const std::vector<Motion>& motions, const int nMotion
             std::vector<int> minFrame1, minFrame2;
             
             // Get Minumum
-            nRelations = this->mMap->getMinimums(i, &minFrame1, &minFrame2);
+            nRelations = this->mMap->calcMinimums(i, minFrame1, minFrame2);
             
             for(j=0; j<nRelations; j++) {
                 if(this->mIndices[index1][minFrame1[j]] < 0 || this->mIndices[index1][minFrame1[j]] > this->mNNodes){

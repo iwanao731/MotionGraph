@@ -27,7 +27,7 @@ namespace Euclid
         const int getNPoints() const;
         const std::string& getLabel() const;
         const std::string& getFilePath() const;
-        Pose& getPose(const int i);
+        const Pose& getPose(const int i);
         
         // setter
         void setNFrames(const int nFrames);

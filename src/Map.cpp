@@ -8,6 +8,8 @@
 
 #include "Map.h"
 
+using namespace Euclid;
+
 Map::Map()
 {
     
@@ -26,7 +28,52 @@ Map::~Map()
     
 }
 
-void Map::constructMap(std::vector<Motion> motions, const int nMotions)
+void Map::setNSteps(const int step)
+{
+    this->mNSteps = step;
+}
+
+void Map::setNRelations(const int n)
+{
+    this->mNRelations = n;
+}
+
+void Map::setThreshold(const float& threshold)
+{
+    this->mThreshold = threshold;
+}
+
+const int Map::getNSteps() const
+{
+    return this->mNSteps;
+}
+
+const int Map::getNRelations() const
+{
+    return this->mNRelations;
+}
+
+const int Map::getNMotions() const
+{
+    return mMotions.size();
+}
+
+const float& Map::getThreshold() const
+{
+    return this->mThreshold;
+}
+
+const std::string& Map::getRelations(const int i, const int j) const
+{
+    return this->mRelations[i][j];
+}
+
+const Motion& Map::getMotion(const int index) const
+{
+    return this->mMotions[index];
+}
+
+void Map::constructMap(const std::vector<Motion>& motions, const int nMotions)
 {
     std::cout << "start comparing each frame" << endl;
     this->mMotions = motions;
@@ -40,7 +87,7 @@ void Map::constructMap(std::vector<Motion> motions, const int nMotions)
 }
 
 // Compare between two motions;
-void Map::compareMotions(Motion &m1, Motion &m2)
+void Map::compareMotions(Motion& m1, Motion& m2)
 {
     float **map;
     
@@ -68,73 +115,7 @@ void Map::compareMotions(Motion &m1, Motion &m2)
     this->mNRelations++;
 }
 
-void Map::saveImage(bool **BMap, float **map, Motion &m1, Motion &m2)
-{
-    int w = m1.getNFrames();
-    int h = m2.getNFrames();
-    
-    float maxError = 0;
-    for(int i=0; i<w; i++) {
-        for(int j=0; j<h; j++) {
-            if(map[i][j] > maxError)
-                maxError = map[i][j];
-        }
-    }
-    
-    ofTexture texColor;
-    ofPixels colorPixels;
-    
-    colorPixels.allocate(w,h,OF_PIXELS_RGB);
-    for(int y=0; y<h; y++) {
-        for(int x=0; x<w; x++) {
-            if(BMap[x][y] == true)
-                colorPixels.setColor(x, y, ofColor(255, 0, 0));
-            else
-                colorPixels.setColor(x, y, ofColor(255 - map[x][y] / maxError * 255));
-        }
-    }
-    
-    texColor.allocate(colorPixels);
-    
-    ofPixels pixels;
-    texColor.readToPixels(pixels);
-    
-    ofImage image;
-    image.setFromPixels(pixels);
-    
-    std::stringstream ss;
-    ss << m1.getLabel() << "_" << m2.getLabel() << ".png";
-    image.save(ss.str());
-}
-
-
-void Map::exportMapFile(float **map, Motion &m1, Motion &m2)
-{
-    std::stringstream ss;
-    ss << m1.getLabel() << "_" << m2.getLabel() << ".txt";
- 
-    // using openFrameworks utility function
-    ofFile file;
-    std::string label = file.getAbsolutePath() + "/" + ss.str();
-    
-    std::ofstream ofs(label);
-    if(!ofs) {
-        std::cerr << "Failed open file" << std::endl;
-        std::exit(1);
-    }else{
-        cout << "export... " << ss.str() << endl;
-    }
-    
-    for(int i=0; i<m1.getNFrames(); i++) {
-        for(int j=0; j<m2.getNFrames(); j++) {
-            ofs << map[i][j] << " ";
-        }
-        ofs << endl;
-    }
-    ofs.close();
-}
-
-float Map::comparePoses(Pose &pose1, Pose &pose2)
+const float& Map::comparePoses(const Pose& pose1, const Pose& pose2)
 {
     assert(pose1.getNPoints() == pose2.getNPoints());
     
@@ -187,11 +168,11 @@ float Map::comparePoses(Pose &pose1, Pose &pose2)
     return error;
 }
 
-int Map::getMinimums(const int level, std::vector<int> *m1, std::vector<int> *m2)
+const int Map::calcMinimums(const int level, std::vector<int>& m1, std::vector<int>& m2)
 {
     int nPts = 0;
     int np1, np2;
-
+    
     if(level >= this->mNRelations) return 0;
     
     this->mMotions[level].getNFrames();
@@ -220,7 +201,7 @@ int Map::getMinimums(const int level, std::vector<int> *m1, std::vector<int> *m2
     
     std::string s1 = this->getRelations(level, 0);
     std::string s2 = this->getRelations(level, 1);
-
+    
 #if 1
     bool **transPoint;
     transPoint = new bool *[np1];
@@ -234,7 +215,7 @@ int Map::getMinimums(const int level, std::vector<int> *m1, std::vector<int> *m2
             }
         }
     }
-
+    
     for(int i=0 ; i<np1; i++) {
         for(int j=0; j<np2; j++) {
             this->calcLocalMinimum(transPoint, level, i, j, this->mNSteps, np1, np2);
@@ -244,14 +225,16 @@ int Map::getMinimums(const int level, std::vector<int> *m1, std::vector<int> *m2
     for(int i=0 ; i<np1; i++) {
         for(int j=0; j<np2; j++) {
             if (transPoint[i][j] == true){
-                m1->push_back(i);
-                m2->push_back(j);
+                m1.push_back(i);
+                m2.push_back(j);
                 //m2->push_back(j+this->mNSteps);
                 nPts++;
             }
         }
     }
-   
+
+    this->saveImage(transPoint, this->mDifferenceMap[level], this->mMotions.at(index1), this->mMotions.at(index2));
+    
 #else
     for(int i = 0 ; i < np1 - this->mNSteps ; i++) {
         for(int j = this->mNSteps ; j < np2 ; j++) {
@@ -265,8 +248,8 @@ int Map::getMinimums(const int level, std::vector<int> *m1, std::vector<int> *m2
                     }
                     
                     if(ok){
-                        m1->push_back(i);
-                        m2->push_back(j+this->mNSteps);
+                        m1.push_back(i);
+                        m2.push_back(j+this->mNSteps);
                         nPts++;
                     }
                 }
@@ -276,11 +259,75 @@ int Map::getMinimums(const int level, std::vector<int> *m1, std::vector<int> *m2
     
 #endif
     
-    this->saveImage(transPoint, this->mDifferenceMap[level], this->mMotions.at(index1), this->mMotions.at(index2));
+    cout << "correspondence point : " << m1.size() << "," << m2.size() << endl;
     
-    cout << "correspondence point : " << m1->size() << "," << m2->size() << endl;
-
     return nPts;
+}
+
+void Map::saveImage(bool **BMap, float **map, const Motion& m1, const Motion& m2)
+{
+    int w = m1.getNFrames();
+    int h = m2.getNFrames();
+    
+    float maxError = 0;
+    for(int i=0; i<w; i++) {
+        for(int j=0; j<h; j++) {
+            if(map[i][j] > maxError)
+                maxError = map[i][j];
+        }
+    }
+    
+    ofTexture texColor;
+    ofPixels colorPixels;
+    
+    colorPixels.allocate(w,h,OF_PIXELS_RGB);
+    for(int y=0; y<h; y++) {
+        for(int x=0; x<w; x++) {
+            if(BMap[x][y] == true)
+                colorPixels.setColor(x, y, ofColor(255, 0, 0));
+            else
+                colorPixels.setColor(x, y, ofColor(255 - map[x][y] / maxError * 255));
+        }
+    }
+    
+    texColor.allocate(colorPixels);
+    
+    ofPixels pixels;
+    texColor.readToPixels(pixels);
+    
+    ofImage image;
+    image.setFromPixels(pixels);
+    
+    std::stringstream ss;
+    ss << m1.getLabel() << "_" << m2.getLabel() << ".png";
+    image.save(ss.str());
+}
+
+
+void Map::exportMapFile(float **map, const Motion& m1, const Motion& m2)
+{
+    std::stringstream ss;
+    ss << m1.getLabel() << "_" << m2.getLabel() << ".txt";
+ 
+    // using openFrameworks utility function
+    ofFile file;
+    std::string label = file.getAbsolutePath() + "/" + ss.str();
+    
+    std::ofstream ofs(label);
+    if(!ofs) {
+        std::cerr << "Failed open file" << std::endl;
+        std::exit(1);
+    }else{
+        cout << "export... " << ss.str() << endl;
+    }
+    
+    for(int i=0; i<m1.getNFrames(); i++) {
+        for(int j=0; j<m2.getNFrames(); j++) {
+            ofs << map[i][j] << " ";
+        }
+        ofs << endl;
+    }
+    ofs.close();
 }
 
 void Map::calcLocalMinimum(bool **transPoint, const int motionIndex, const int i, const int j, const int range, const int sizeW, const int sizeH)

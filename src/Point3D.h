@@ -6,35 +6,38 @@
 //
 //
 
-#ifndef ____Point3D__
-#define ____Point3D__
+#ifndef ____Euclid__Point3D____
+#define ____Euclid__Point3D____
 
 #include <stdio.h>
 #include <ofMain.h>
 
-class Point3D
+namespace Euclid
 {
-public:
-    Point3D();
-    Point3D(const float& x, const float& y, const float& z);
-    Point3D(const int x, const int y, const int z);
-    ~Point3D();
-    
-    void setX(const float& x);
-    void setY(const float& y);
-    void setZ(const float& z);
-    void setWeight(const float& w);
-    void setPosition(const ofPoint& p);
-    
-    const float getX() const;
-    const float getY() const;
-    const float getZ() const;
-    const float getWeight() const;
-    const ofPoint getPosition() const;
-    
-private:
-    ofPoint mPos;
-    float mWeight;
-};
+    class Point3D
+    {
+    public:
+        Point3D();
+        Point3D(const float& x, const float& y, const float& z);
+        Point3D(const int x, const int y, const int z);
+        ~Point3D();
+        
+        void setX(const float& x);
+        void setY(const float& y);
+        void setZ(const float& z);
+        void setWeight(const float& w);
+        void setPosition(const ofPoint& p);
+        
+        const float& getX() const;
+        const float& getY() const;
+        const float& getZ() const;
+        const float& getWeight() const;
+        const ofPoint& getPosition() const;
+        
+    private:
+        ofPoint mPos;
+        float mWeight;
+    };
+}
 
-#endif /* defined(____Point3D__) */
+#endif /* defined(____Euclid__Point3D____) */
