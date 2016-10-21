@@ -22,16 +22,18 @@ namespace Euclid
         Motion();
         ~Motion();
         
-        const int getNFrames() const{ return this->mNFrames; }
-        const int getNPoints() const { return this->mNPoints; }
-        const std::string& getLabel() const { return this->mLabel; }
-        const std::string& getFilePath() const { return this->mFilePath; }
+        // getter
+        const int getNFrames() const;
+        const int getNPoints() const;
+        const std::string& getLabel() const;
+        const std::string& getFilePath() const;
         Pose& getPose(const int i);
         
+        // setter
+        void setNFrames(const int nFrames);
+        void setLabel(const std::string& label);
+        void setFilePath(const std::string& filepath);
         void setPoses(const std::vector<Pose>& poses, const int nFrames);
-        void setNFrames(const int nFrames) { this->mNFrames = nFrames; }
-        void setLabel(const std::string& label) { this->mLabel = label; }
-        void setFilePath(const std::string& filepath) { this->mFilePath = filepath; }
         void addPose(Pose& p);
         
         // utility
