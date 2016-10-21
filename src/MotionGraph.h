@@ -43,7 +43,7 @@ namespace Euclid
         bool isExistMotion(const int index) const;
         const int getNumMotion() const;
         Motion *getMotion(const int index);
-        Graph *getGraph() const { return this->mGraph; }
+        Graph *getGraph() const;
         
     private:
         int mAnimCount;
@@ -57,7 +57,10 @@ namespace Euclid
     public:
         Threshold(const float value) : mThreshold(value) {}
         ~Threshold() {}
-        const float getValue() const { return this->mThreshold; }
+        const float getValue() const
+        {
+            return this->mThreshold;
+        }
         
     private:
         float mThreshold;
@@ -68,7 +71,10 @@ namespace Euclid
     public:
         NCoincidents(const int value) : mNCoincidents(value) {}
         ~NCoincidents() {}
-        const int getValue() const { return this->mNCoincidents; }
+        const int getValue() const
+        {
+            return this->mNCoincidents;
+        }
         
     private:
         int mNCoincidents;

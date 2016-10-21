@@ -8,6 +8,8 @@
 
 #include "MotionGraph.h"
 
+using namespace Euclid;
+
 MotionGraph::MotionGraph()
 {
     mAnimCount = 0;
@@ -159,6 +161,11 @@ Motion *MotionGraph::getMotion(const int index)
         return &this->mMotions.at(index);
     else
         return 0;
+}
+
+Graph *MotionGraph::getGraph() const
+{
+    return this->mGraph;
 }
 
 const int MotionGraph::getNumMotion() const
