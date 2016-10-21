@@ -25,15 +25,15 @@ public:
     Graph();
     ~Graph();
 
-    int getNumNodes() { return this->mNNodes; }
+    const int getNumNodes() const;
     Node* getNode(const int node);
     
-    bool hasBranch(const int motionIndex, const int frameId);
-    int getNodeindex(const int motionIndex, const int frameId);
+    const bool hasBranch(const int motionIndex, const int frameId);
+    const int getNodeindex(const int motionIndex, const int frameId);
 
-    void constructGraph(std::vector<Motion> motions, const int nMotions, const float threshold, const int nCoincidents);
-    void exportGraphFile(const string filename, const std::vector<std::string> motion_paths);
-    void draw(const float wScale, const float hScale);
+    void constructGraph(const std::vector<Motion>& motions, const int nMotions, const float& threshold, const int nCoincidents);
+    void exportGraphFile(const string& filename, const std::vector<std::string>& motion_paths);
+    void draw(const float& wScale, const float& hScale);
     //float calcInterpolateValue(const int p, const int k);
     
 private:
@@ -45,11 +45,11 @@ private:
     int mCurrentMotionIndex;
     int mCurrentFrame;
     
-    int addNode(Node *node);
+    const int addNode(Node *node);
     void insertNode(Node *n);
-    void initIndices(std::vector<Motion> motions, const int nMotions);
-    void createTransitions( std::string m1, int node1, int frame1, int motionID1,
-                            std::string m2, int node2, int frame2, int motionID2,
+    void initIndices(const std::vector<Motion>& motions, const int nMotions);
+    void createTransitions( std::string& m1, int node1, int frame1, int motionID1,
+                            std::string& m2, int node2, int frame2, int motionID2,
                             int transiction,int range, int totalFrames1, int totalFrames2);  
 };
 
