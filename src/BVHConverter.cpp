@@ -8,9 +8,9 @@
 
 #include "BVHConverter.h"
 
-Motion BVHConverter::ToMotion(mlib::ofxDigitalDanceBvh &bvh)
+Euclid::Motion BVHConverter::ToMotion(mlib::ofxDigitalDanceBvh &bvh)
 {
-    Motion motion;
+    Euclid::Motion motion;
     
     int numFrames = bvh.getNumFrames();
     //cout << "numFrames : " << numFrames << endl;

@@ -14,6 +14,8 @@
 #include <fstream>
 #include "Motion.h"
 
+using namespace Euclid;
+
 class Map
 {
 public:

@@ -8,29 +8,29 @@
 
 #include "Motion.h"
 
-Motion::Motion()
+Euclid::Motion::Motion()
 {
     this->mNPoints = 0;
 }
 
-Motion::~Motion()
+Euclid::Motion::~Motion()
 {
     
 }
 
-Pose Motion::getPose(int i)
+Pose Euclid::Motion::getPose(int i)
 {
     assert(i < this->mNFrames);
     return this->mPoses[i];
 }
 
-void Motion::setPoses(std::vector<Pose> poses, const int nFrames)
+void Euclid::Motion::setPoses(std::vector<Pose> poses, const int nFrames)
 {
     this->mPoses = poses;
     this->mNFrames = nFrames;
 }
 
-void Motion::addPose(Pose p)
+void Euclid::Motion::addPose(Pose p)
 {
     this->mPoses.push_back(p);
     
@@ -42,7 +42,7 @@ void Motion::addPose(Pose p)
     }
 }
 
-void Motion::printInfo()
+void Euclid::Motion::printInfo()
 {
     std::cout << "label: " << this->mLabel << "    frames: " << this->mNFrames << std::endl;
 }

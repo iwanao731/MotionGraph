@@ -15,6 +15,8 @@
 #include "Graph.h"
 #include "Motion.h"
 
+using namespace Euclid;
+
 class Threshold;
 class NCoincidents;
 
