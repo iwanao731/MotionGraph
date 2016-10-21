@@ -28,16 +28,17 @@ public:
     MotionGraphPlayer();
     ~MotionGraphPlayer();
 
-    void set(MotionGraph motion_graph);
-    void load(const std::string filename);
+    void set(const MotionGraph& motionGraph);
+    void load(const std::string& filename);
     void update();
     void play();
     void stop();
-    virtual void draw();
+    void draw();
+    const bool isPlaying() const;
     
-    bool isPlaying();
-    int getNumMotions() { return mNumMotions; }
-    int getCurrentMotionIndex() { return mCurrentMotion.mMotionIndex; }
+    const int getNumMotions() const;
+    const int getCurrentMotionIndex() const;
+    
     void selectMotion(const int index);
 
 private:
@@ -53,10 +54,10 @@ private:
     ofxDigitalDanceBvh *mBvh;
     ofxDigitalDanceBvh *mViewer;
     
-    bool hasBranch();
+    const bool hasBranch() const;
     void moveBranchMotion();
-    float mixMotions(MotionInfo current, MotionInfo next);
-    float calcInterpolateValue(const int p, const int k);
+    const float mixMotions(const MotionInfo& current, MotionInfo& next);
+    const float calcInterpolateValue(const int p, const int k);
 };
 
 #endif /* defined(____MotionGraphPlayer__) */

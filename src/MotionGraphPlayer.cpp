@@ -18,13 +18,13 @@ MotionGraphPlayer::~MotionGraphPlayer()
     
 }
 
-void MotionGraphPlayer::set(MotionGraph motion_graph)
+void MotionGraphPlayer::set(const MotionGraph& motionGraph)
 {
-    mMGraph = motion_graph;
+    mMGraph = motionGraph;
     mNumMotions = this->mMGraph.getNumMotion();
     mBvh = new ofxDigitalDanceBvh [mNumMotions];
     
-    for (int i=0; i<mNumMotions; i++) {
+    for (int i=0; i<this->getNumMotions(); i++) {
         mBvh[i].load(this->mMGraph.getMotion(i)->getFilePath());
         mBvh[i].setLoop(true);
         mBvh[i].play();
@@ -34,7 +34,7 @@ void MotionGraphPlayer::set(MotionGraph motion_graph)
     mViewer = &mBvh[mCurrentMotion.mMotionIndex];
 }
 
-void MotionGraphPlayer::load(const std::string filename)
+void MotionGraphPlayer::load(const std::string& filename)
 {
     this->mMGraph.LoadGraph(filename);
 }
@@ -85,7 +85,32 @@ void MotionGraphPlayer::draw()
     ofPopMatrix();
 }
 
-bool MotionGraphPlayer::hasBranch()
+const bool MotionGraphPlayer::isPlaying() const
+{
+    return this->mPlaying;
+}
+
+const int MotionGraphPlayer::getNumMotions() const
+{
+    return this->mNumMotions;
+}
+
+const int MotionGraphPlayer::getCurrentMotionIndex() const
+{
+    return this->mCurrentMotion.mMotionIndex;
+}
+
+void MotionGraphPlayer::selectMotion(const int index)
+{
+    if(index < this->mMGraph.getNumMotion()){
+        mCurrentMotion.mMotionIndex = index;
+        cout << "motion index : " << index << endl;
+    }else{
+        cout << "max num of motion is " << this->mMGraph.getNumMotion() << endl;
+    }
+}
+
+const bool MotionGraphPlayer::hasBranch() const
 {
     if(this->mMGraph.getGraph()->hasBranch(mCurrentMotion.mMotionIndex, mCurrentMotion.mFrame)){
         return true;
@@ -109,7 +134,7 @@ void MotionGraphPlayer::moveBranchMotion()
     }
 }
 
-float MotionGraphPlayer::mixMotions(MotionInfo current, MotionInfo next)
+const float MotionGraphPlayer::mixMotions(const MotionInfo& current, MotionInfo& next)
 {
     // current update
     this->mBvh[current.mMotionIndex].setFrame(current.mFrame);
@@ -128,22 +153,7 @@ float MotionGraphPlayer::mixMotions(MotionInfo current, MotionInfo next)
     return calcInterpolateValue(mMovingTime, mOffsetFrame);
 }
 
-bool MotionGraphPlayer::isPlaying()
-{
-    return this->mPlaying;
-}
-
-void MotionGraphPlayer::selectMotion(const int index)
-{
-    if(index < this->mMGraph.getNumMotion()){
-        mCurrentMotion.mMotionIndex = index;
-        cout << "motion index : " << index << endl;
-    }else{
-        cout << "max num of motion is " << this->mMGraph.getNumMotion() << endl;
-    }
-}
-
-float MotionGraphPlayer::calcInterpolateValue(const int p, const int k)
+const float MotionGraphPlayer::calcInterpolateValue(const int p, const int k)
 {
     assert(-1 < p && p < k);
 

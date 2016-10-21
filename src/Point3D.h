@@ -16,21 +16,21 @@ class Point3D
 {
 public:
     Point3D();
-    Point3D(const float x, const float y, const float z);
+    Point3D(const float& x, const float& y, const float& z);
     Point3D(const int x, const int y, const int z);
     ~Point3D();
     
-    void setX(const float x) { this->mPos.x = x; }
-    void setY(const float y) { this->mPos.y = y; }
-    void setZ(const float z) { this->mPos.z = z; }
-    void setWeight(const float w) { this->mWeight = w; }
-    void setPosition(const ofPoint p) { this->mPos = p; }
+    void setX(const float& x);
+    void setY(const float& y);
+    void setZ(const float& z);
+    void setWeight(const float& w);
+    void setPosition(const ofPoint& p);
     
-    float getX() { return this->mPos.x; }
-    float getY() { return this->mPos.y; }
-    float getZ() { return this->mPos.z; }
-    float getWeight() { return this->mWeight; }
-    ofPoint getPosition() { return mPos; }
+    const float getX() const;
+    const float getY() const;
+    const float getZ() const;
+    const float getWeight() const;
+    const ofPoint getPosition() const;
     
 private:
     ofPoint mPos;
