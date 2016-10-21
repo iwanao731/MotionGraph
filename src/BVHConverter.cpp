@@ -8,12 +8,9 @@
 
 #include "BVHConverter.h"
 
-Euclid::Motion BVHConverter::ToMotion(mlib::ofxDigitalDanceBvh &bvh)
+void BVHConverter::ToMotion(mlib::ofxDigitalDanceBvh& bvh, Euclid::Motion& motion)
 {
-    Euclid::Motion motion;
-    
     int numFrames = bvh.getNumFrames();
-    //cout << "numFrames : " << numFrames << endl;
     motion.setNFrames(numFrames);
     
     for(int i=0; i<numFrames; i++)
@@ -31,5 +28,4 @@ Euclid::Motion BVHConverter::ToMotion(mlib::ofxDigitalDanceBvh &bvh)
         }
         motion.addPose(pose);
     }
-    return motion;
 }

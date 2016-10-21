@@ -154,7 +154,7 @@ void ofApp::loadMotion(const string& filepath, Motion &motion)
     bvh.load(filepath);
     
     // Convert Motion
-    motion = BVHConverter::ToMotion(bvh);
+    BVHConverter::ToMotion(bvh, motion);
     
     // Set Label and path
     ofFilePath path;

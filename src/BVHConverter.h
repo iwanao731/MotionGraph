@@ -16,7 +16,7 @@
 
 namespace BVHConverter
 {
-    Euclid::Motion ToMotion(mlib::ofxDigitalDanceBvh &bvh);
+    void ToMotion(mlib::ofxDigitalDanceBvh& bvh, Euclid::Motion& motion);
 };
 
 #endif /* defined(____BVH2MotionAdapter__) */
