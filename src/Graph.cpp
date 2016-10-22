@@ -103,7 +103,108 @@ void Graph::constructGraph(const std::vector<Motion>& motions, const int nMotion
     }
 }
 
-void Graph::exportGraphFile(const string& filename, const std::vector<std::string>& motion_paths)
+void Graph::loadGraph(const std::string& filename)
+{
+    cout << "Load Graph : " << filename << endl;
+    
+    ofFile file;
+    std::string label = file.getAbsolutePath() + "/" + filename;
+    
+    std::ifstream inFile;
+    inFile.open(label, std::ios_base::in);
+    if(!inFile)
+        return false;
+    
+    const int MAX_LINE_CHAR = 512;
+    char szLine[MAX_LINE_CHAR] = "";
+    char szLineTokens[MAX_LINE_CHAR] = "";
+    
+    inFile.getline(szLine, MAX_LINE_CHAR); //line of file type
+    if( 0 != strcmp(szLine,"# Graph Version 0.1") ) //check the file type
+    {
+        printf("Graph file should begin with \"# Graph Version 0.1\"  \n");
+        return false;
+    }
+    
+    // loop process the file body
+    while( true )
+    {
+        inFile.getline(szLine, MAX_LINE_CHAR);
+        
+        if( 0 == strlen(szLine) ) // end of file
+            break;
+        
+        strcpy(szLineTokens, szLine);
+        
+        // split the line to tokens
+        std::vector<char *> tokens;
+        const char* szDelimit = " ,=:\"{}\t";
+        char *token = strtok(szLineTokens, szDelimit);
+        
+        while(token)
+        {
+            tokens.push_back(token);
+            token = strtok(NULL, szDelimit);
+        }
+        
+        if( 0 == tokens.size() )
+            continue;
+        if( tokens[0][0] == '#') // comment line
+            continue;
+        
+        if( 0 == strcmp("MotionNum", tokens[0]) )
+        {
+            int MotionNum = std::atoi(tokens[1]);
+            cout << "MotionNum " << MotionNum << endl;
+        }
+        else if( 0 == strcmp("MotionPath", tokens[0]) )
+        {
+            string MotionPath = tokens[1];
+            cout << "MotionPath " << MotionPath << endl;
+        }
+        else if( 0 == strcmp("MotionName", tokens[0]) )
+        {
+            string motionName = tokens[1];
+            cout << "MotionName " << motionName << endl;
+            if( 0 == strcmp("frame", tokens[2]) )
+            {
+                int frame = std::atoi(tokens[3]);
+                cout << "frame " << frame << endl;
+                int index;
+                if( index > -1 ){
+                    Node *n;
+                    n->setMotionLabel(motionName);
+                    n->setFrameID(frame);
+                    this->mNodes.push_back(n);
+                }
+            }
+            if( 0 == strcmp("NumEdges", tokens[4]) )
+            {
+                int NumEdges = std::atoi(tokens[5]);
+                cout << "NumEdges " << NumEdges << endl;
+            }
+        }
+        else if( 0 == strcmp("TargetLabel", tokens[0]) )
+        {
+            Node *n;
+            Edge *e;
+            e = new Edge(this->mNodes.back(), tokens[0]);
+
+            string TargetLabel = tokens[1];
+            n->setMotionLabel(TargetLabel);
+            cout << "   TargetLabel " << TargetLabel << endl;
+            if( 0 == strcmp("frame", tokens[2]) )
+            {
+                int frame = std::atoi(tokens[3]);
+                cout << "   frame " << frame << endl;
+                n->setFrameID(frame);
+                e->setDestination(n);
+            }
+        }
+    }
+}
+
+void Graph::exportGraphFile(const string& filename, const std::vector<Motion>& motion)
 {
     std::cout << "export graph file: " << endl;
     std::stringstream ss;
@@ -128,29 +229,42 @@ void Graph::exportGraphFile(const string& filename, const std::vector<std::strin
     int previousFrame = -1;
     
     // add Motion Path;
-    int motionNum = motion_paths.size();
+    int motionNum = motion.size();
     
     ofs << "MotionNum " << motionNum << endl;
     
     for(int i=0; i<motionNum; i++) {
-        ofs << "MotionPath " << motion_paths[i] << std::endl;
+        ofs << "MotionPath " << motion[i].getFilePath() << " frameNum " << motion[i].getNFrames() << std::endl;
+    }
+
+    for(int i=0; i<this->getNumNodes(); i++) {
+        ofs << "MotionName " << this->getNode(i)->getMotionLabel() << " ";
+        ofs << "frame " << this->getNode(i)->getFrameID() << " "; 
+        ofs << "NumEdges " << this->getNode(i)->getNumEdges() << endl;
     }
     
     for(int i=0; i<this->getNumNodes(); i++) {
-        if(this->getNode(i)->getNumEdges() > 0) {
-            ofs << "MotionName " << this->getNode(i)->getMotionLabel() << " ";
-            ofs << "frame " << this->getNode(i)->getFrameID() << " ";
-            ofs << "NumEdges " << this->getNode(i)->getNumEdges() << endl;;
-            
-            for(int j=0; j<this->getNode(i)->getNumEdges(); j++) {
-                ofs << "    TargetLabel " << this->getNode(i)->getEdge(j)->getDestination()->getMotionLabel() << " ";
-                ofs << "frame " << this->getNode(i)->getEdge(j)->getDestination()->getFrameID() << endl;;
-            }
+        ofs << this->getNode(i)->getNodeID() << " " << this->getNode(i)->getNumEdges() << " ";
+        for(int j=0; j<this->getNode(i)->getNumEdges(); j++) {
+            ofs << this->getNode(i)->getEdge(j)->getDestination()->getNodeID() << " ";
         }
+        ofs << endl;
     }
+
+//    for(int i=0; i<this->getNumNodes(); i++) {
+//        if(this->getNode(i)->getNumEdges() > 0) {
+//            ofs << "MotionName " << this->getNode(i)->getMotionLabel() << " ";
+//            ofs << "frame " << this->getNode(i)->getFrameID() << " ";
+//            ofs << "NumEdges " << this->getNode(i)->getNumEdges() << endl;;
+//            
+//            for(int j=0; j<this->getNode(i)->getNumEdges(); j++) {
+//                ofs << "    TargetLabel " << this->getNode(i)->getEdge(j)->getDestination()->getMotionLabel() << " ";
+//                ofs << "frame " << this->getNode(i)->getEdge(j)->getDestination()->getFrameID() << endl;;
+//            }
+//        }
+//    }
     ofs.close();
 }
-
 
 void Graph::draw(const float& wScale, const float& hScale)
 {
@@ -198,7 +312,6 @@ const int Graph::addNode(Node *node)
     this->mNNodes++;
     return node->getNodeID();
 }
-
 
 /*
  <------------->        <----> <----->
@@ -288,9 +401,9 @@ void Graph::initIndices(const std::vector<Motion>& motions, const int nMotions)
  3-------------->4			3-------->6---->4
         e2						e5		e6
  */
-void Graph::createTransitions(std::string& m1, int node1, int frame1, int motionID1,
-                              std::string& m2, int node2, int frame2, int motionID2,
-                              int transiction,int range, int totalFrames1, int totalFrames2)
+void Graph::createTransitions(std::string& m1, const int node1, const int frame1, const int motionID1,
+                              std::string& m2, const int node2, const int frame2, const int motionID2,
+                              const int transiction, const int range, const int totalFrames1, const int totalFrames2)
 {
     std::stringstream ss;
     ss << m1 << "_" ;
@@ -308,7 +421,6 @@ void Graph::createTransitions(std::string& m1, int node1, int frame1, int motion
     
     this->insertNode(this->getNode(node1));
     this->insertNode(this->getNode(node2));
-    
     
     // TBD
     // not cycle in same motion

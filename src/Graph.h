@@ -34,7 +34,8 @@ namespace Euclid
         const int getNodeindex(const int motionIndex, const int frameId);
 
         void constructGraph(const std::vector<Motion>& motions, const int nMotions, const float& threshold, const int nCoincidents);
-        void exportGraphFile(const string& filename, const std::vector<std::string>& motion_paths);
+        void loadGraph(const std::string& filename);
+        void exportGraphFile(const string& filename, const std::vector<Motion>& motion);
         void draw(const float& wScale, const float& hScale);
         
     private:
@@ -49,9 +50,9 @@ namespace Euclid
         const int addNode(Node *node);
         void insertNode(Node *n);
         void initIndices(const std::vector<Motion>& motions, const int nMotions);
-        void createTransitions( std::string& m1, int node1, int frame1, int motionID1,
-                                std::string& m2, int node2, int frame2, int motionID2,
-                                int transiction,int range, int totalFrames1, int totalFrames2);  
+        void createTransitions( std::string& m1, const int node1, const int frame1, const int motionID1,
+                                std::string& m2, const int node2, const int frame2, const int motionID2,
+                                const int transiction, const int range, const int totalFrames1, const int totalFrames2);
     };
 }
 

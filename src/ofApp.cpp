@@ -21,7 +21,7 @@ void ofApp::setup(){
     mMotionGraph.constructGraph(Threshold(2000.f), NCoincidents(5));
     mMotionGraph.exportGraph("graph.txt");
     
-    // motion_graph.LoadGraph("graph.txt");
+    mMotionGraph.LoadGraph("graph.txt");
     // motion_graph.saveImage("file.png");
     //mgPlayer.load("graph.txt");
     
