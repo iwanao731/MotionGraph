@@ -24,10 +24,10 @@ namespace Euclid
         ~Edge();
         
         void setStartNode(Node *node);
-        void setDestination(Node *node);
+        void setDestNode(Node *node);
         
         Node *getStartNode() const;
-        Node *getDestination() const;
+        Node *getDestNode() const;
         
     private:
         float mWeight;

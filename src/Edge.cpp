@@ -26,7 +26,7 @@ Edge::~Edge()
     
 }
 
-void Edge::setDestination(Node *node)
+void Edge::setDestNode(Node *node)
 {
     this->mNode2 = node;
 }
@@ -36,7 +36,7 @@ void Edge::setStartNode(Node *node)
     this->mNode1 = node;
 }
 
-Node *Edge::getDestination() const
+Node *Edge::getDestNode() const
 {
     return this->mNode2;
 }
