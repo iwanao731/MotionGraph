@@ -4,6 +4,7 @@
 #include "ofxBvh.h"
 #include "MotionGraph.h"
 #include "MotionGraphPlayer.h"
+#include "SecondaryMotionGraph.h"
 
 class ofApp : public ofBaseApp{
 
@@ -29,6 +30,7 @@ class ofApp : public ofBaseApp{
         ofLight mLight;
         MotionGraph mMotionGraph;
         MotionGraphPlayer mMGPlayer;
+        SecondaryMotionGraph SMG;
     
         void loadMotion(const string& filepath, Motion &motion);
 };
