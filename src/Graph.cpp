@@ -156,52 +156,58 @@ void Graph::loadGraph(const std::string& filename)
         
         if( 0 == strcmp("MotionNum", tokens[0]) )
         {
-            int MotionNum = std::atoi(tokens[1]);
-            cout << "MotionNum " << MotionNum << endl;
+            int motionNum = std::atoi(tokens[1]);
+            this->mIndices = new int *[motionNum];
+            cout << "MotionNum " << motionNum << endl;
         }
         else if( 0 == strcmp("MotionPath", tokens[0]) )
         {
-            string MotionPath = tokens[1];
-            cout << "MotionPath " << MotionPath << endl;
+            string motionPath = tokens[1];
+            int motionIndex = this->mMapLabelIndex.size();
+            
+            if ( 0 == strcmp("MotionLabel", tokens[2]) )
+            {
+                string motionLabel = tokens[3];
+                this->mMapLabelIndex.insert( map<std::string, int>::value_type( motionLabel, motionIndex ) );
+            }
+            
+            if ( 0 == strcmp("frameNum", tokens[4]) )
+            {
+                int numFrame = std::atoi(tokens[5]);
+                this->mIndices[motionIndex] = new int [numFrame];
+                
+                // initialization
+                for(int i=0; i<this->mMapLabelIndex.size(); i++) {
+                    this->mIndices[motionIndex][i] = -1;
+                }
+            }
         }
         else if( 0 == strcmp("MotionName", tokens[0]) )
         {
             string motionName = tokens[1];
-            cout << "MotionName " << motionName << endl;
             if( 0 == strcmp("frame", tokens[2]) )
             {
                 int frame = std::atoi(tokens[3]);
-                cout << "frame " << frame << endl;
-                int index;
-                if( index > -1 ){
-                    Node *n;
-                    n->setMotionLabel(motionName);
-                    n->setFrameID(frame);
-                    this->mNodes.push_back(n);
-                }
-            }
-            if( 0 == strcmp("NumEdges", tokens[4]) )
-            {
-                int NumEdges = std::atoi(tokens[5]);
-                cout << "NumEdges " << NumEdges << endl;
+                Node *n = new Node;
+                n->setFrameID(frame);
+                n->setMotionLabel(motionName);
+                auto index = mMapLabelIndex.find(motionName);
+                this->mIndices[index->second][frame] = this->addNode(n);
             }
         }
-        else if( 0 == strcmp("TargetLabel", tokens[0]) )
+        else if( 0 == strcmp("MotionLink", tokens[0]) )
         {
-            Node *n;
-            Edge *e;
-            e = new Edge(this->mNodes.back());
-
-            string TargetLabel = tokens[1];
-            n->setMotionLabel(TargetLabel);
-            cout << "   TargetLabel " << TargetLabel << endl;
-            if( 0 == strcmp("frame", tokens[2]) )
+            int nodeIndex = std::atoi(tokens[1]);
+            int numLinks = std::atoi(tokens[2]);
+            
+            if(numLinks > 0)
             {
-                int frame = std::atoi(tokens[3]);
-                cout << "   frame " << frame << endl;
-                n->setFrameID(frame);
-                e->setDestination(n);
-                n->addEdge(e);
+                for(int i=0; i<numLinks; i++) {
+                    int index = std::atoi(tokens[3+i]);
+                    Edge *e;
+                    e = new Edge(this->mNodes[index]);
+                    this->mNodes[nodeIndex]->addEdge(e);
+                }
             }
         }
     }
@@ -224,48 +230,31 @@ void Graph::exportGraphFile(const string& filename, const std::vector<Motion>& m
     }else{
         cout << "export... " << ss.str() << endl;
     }
-    
-    std::cout << "Numbert of Node" << this->getNumNodes() << endl;
-    
-    ofs << "# Graph Version 0.1" << endl;
-    
-    int previousFrame = -1;
-    
-    // add Motion Path;
+
     int motionNum = motion.size();
     
+    std::cout << "Numbert of Node" << this->getNumNodes() << endl;
+    ofs << "# Graph Version 0.1" << endl;
     ofs << "MotionNum " << motionNum << endl;
     
     for(int i=0; i<motionNum; i++) {
-        ofs << "MotionPath " << motion[i].getFilePath() << " frameNum " << motion[i].getNFrames() << std::endl;
+        ofs <<  "MotionPath "   << motion[i].getFilePath()  << " " <<
+                "MotionLabel "  << motion[i].getLabel()     << " " <<
+                "frameNum "     << motion[i].getNFrames()   << std::endl;
     }
 
     for(int i=0; i<this->getNumNodes(); i++) {
         ofs << "MotionName " << this->getNode(i)->getMotionLabel() << " ";
-        ofs << "frame " << this->getNode(i)->getFrameID() << " "; 
-        ofs << "NumEdges " << this->getNode(i)->getNumEdges() << endl;
+        ofs << "frame "      << this->getNode(i)->getFrameID() << endl;
     }
     
     for(int i=0; i<this->getNumNodes(); i++) {
-        ofs << this->getNode(i)->getNodeID() << " " << this->getNode(i)->getNumEdges() << " ";
+        ofs << "MotionLink " << this->getNode(i)->getNodeID() << " " << this->getNode(i)->getNumEdges() << " ";
         for(int j=0; j<this->getNode(i)->getNumEdges(); j++) {
-            ofs << this->getNode(i)->getEdge(j)->getDestination()->getNodeID() << " ";
+            ofs << this->getNode(i)->getEdge(j)->getDestNode()->getNodeID() << " ";
         }
         ofs << endl;
     }
-
-//    for(int i=0; i<this->getNumNodes(); i++) {
-//        if(this->getNode(i)->getNumEdges() > 0) {
-//            ofs << "MotionName " << this->getNode(i)->getMotionLabel() << " ";
-//            ofs << "frame " << this->getNode(i)->getFrameID() << " ";
-//            ofs << "NumEdges " << this->getNode(i)->getNumEdges() << endl;;
-//            
-//            for(int j=0; j<this->getNode(i)->getNumEdges(); j++) {
-//                ofs << "    TargetLabel " << this->getNode(i)->getEdge(j)->getDestination()->getMotionLabel() << " ";
-//                ofs << "frame " << this->getNode(i)->getEdge(j)->getDestination()->getFrameID() << endl;;
-//            }
-//        }
-//    }
     ofs.close();
 }
 
@@ -286,8 +275,8 @@ void Graph::draw(const float& wScale, const float& hScale)
         ofDrawCircle(offset.x + frame1 * wScale, offset.y + index1 * hScale, 2.0);
         
         for(int j=0; j<this->getNode(i)->getNumEdges(); j++) {
-            index2 = this->getNode(i)->getEdge(j)->getDestination()->getMotionID();
-            frame2 = this->getNode(i)->getEdge(j)->getDestination()->getFrameID();
+            index2 = this->getNode(i)->getEdge(j)->getDestNode()->getMotionID();
+            frame2 = this->getNode(i)->getEdge(j)->getDestNode()->getFrameID();
             
             if(index1 == index2){
                 ofPoint p1(offset.x + frame1 * wScale, offset.y + index1 * hScale);
@@ -328,13 +317,13 @@ void Graph::insertNode(Node *n)
         if(this->mNodes[i]->getMotionID() == n->getMotionID()) {
             
             for(int j=0; j<this->mNodes[i]->getNumEdges(); j++) {
-                if(this->mNodes[i]->getEdge(j)->getDestination()->getMotionID() == n->getMotionID()) {
+                if(this->mNodes[i]->getEdge(j)->getDestNode()->getMotionID() == n->getMotionID()) {
                     
-                    if(this->mNodes[i]->getFrameID() < n->getFrameID() && n->getFrameID() < this->mNodes[i]->getEdge(j)->getDestination()->getFrameID())
+                    if(this->mNodes[i]->getFrameID() < n->getFrameID() && n->getFrameID() < this->mNodes[i]->getEdge(j)->getDestNode()->getFrameID())
                     {
-                        Edge *e = new Edge(this->mNodes[i]->getEdge(j)->getDestination());
+                        Edge *e = new Edge(this->mNodes[i]->getEdge(j)->getDestNode());
                         n->addEdge(e);
-                        this->mNodes[i]->getEdge(j)->setDestination(n);
+                        this->mNodes[i]->getEdge(j)->setDestNode(n);
                         //this->mNodes[i]->setEndFrameID(this->mNodes[i]->getEdge(j)->getDestination()->getFrameID());
                         count++;
                     }

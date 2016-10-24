@@ -42,6 +42,7 @@ namespace Euclid
         int **mIndices;             // first : number of motion, second : number of frame
         int mNNodes;                // Number of Nodes        
         std::vector<Node*> mNodes;  // Nodes
+        std::map<std::string, int> mMapLabelIndex;
 
         int mCurrentMotionIndex;
         int mCurrentFrame;
