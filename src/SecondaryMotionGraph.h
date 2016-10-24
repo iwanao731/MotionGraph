@@ -13,30 +13,24 @@
 #include "Eigen/Sparse"
 #include "MotionGraph.h"
 
-class SecondaryMotionGraph : protected Graph
+class SecondaryMotionGraph : public Euclid::Graph
 {
-    //using SMG = SecondaryMotionGraph; // same meaning typedef (C++11)
-
 public:
     SecondaryMotionGraph();
-    ~SecondaryMotionGraph();
+    virtual ~SecondaryMotionGraph();
 
     void loadGraph(const string& filename);
-    void constructeGraph();
+    void constructeGraph(const int motionIndex, const int frameIndex);
     
 private:
-    
-    // corresponding mg node id
     Eigen::SparseMatrix<float> IRF; // Hair Motion
-    // parent node' id
-    // children nodes' id
     
-    void initialization();
+    void initialization(const int nodeIndex);
     void expansion();
     void merge();
     
     // Breath First Search
-    void BFS();
+    void BFS(Euclid::Node *n);
 };
 
 #endif /* defined(____Secondary__Motion__Graph____) */
