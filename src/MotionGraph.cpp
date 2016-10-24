@@ -46,89 +46,7 @@ void MotionGraph::draw(const float& wScale, const float& hScale)
 
 bool MotionGraph::LoadGraph(const std::string& filename)
 {
-    cout << "Load Graph : " << filename << endl;
-
-    ofFile file;
-    std::string label = file.getAbsolutePath() + "/" + filename;
-
-    std::ifstream inFile;
-    inFile.open(label, std::ios_base::in);
-    if(!inFile)
-        return false;
-
-    const int MAX_LINE_CHAR = 512;
-    char szLine[MAX_LINE_CHAR] = "";
-    char szLineTokens[MAX_LINE_CHAR] = "";
-    
-    inFile.getline(szLine, MAX_LINE_CHAR); //line of file type
-    if( 0 != strcmp(szLine,"# Graph Version 0.1") ) //check the file type
-    {
-        printf("Graph file should begin with \"# Graph Version 0.1\"  \n");
-        return false;
-    }
-    
-    // loop process the file body
-    while( true )
-    {
-        inFile.getline(szLine, MAX_LINE_CHAR);
-        
-        if( 0 == strlen(szLine) ) // end of file
-            break;
-        
-        strcpy(szLineTokens, szLine);
-        
-        // split the line to tokens
-        std::vector<char *> tokens;
-        const char* szDelimit = " ,=:\"{}\t";
-        char *token = strtok(szLineTokens, szDelimit);
-        
-        while(token)
-        {
-            tokens.push_back(token);
-            token = strtok(NULL, szDelimit);
-        }
-        
-        if( 0 == tokens.size() )
-            continue;
-        if( tokens[0][0] == '#') // comment line
-            continue;
-        
-        if( 0 == strcmp("MotionNum", tokens[0]) )
-        {
-            int MotionNum = std::atoi(tokens[1]);
-            cout << "MotionNum " << MotionNum << endl;
-        }
-        else if( 0 == strcmp("MotionPath", tokens[0]) )
-        {
-            string MotionPath = tokens[1];
-            cout << "MotionPath " << MotionPath << endl;
-        }
-        else if( 0 == strcmp("MotionName", tokens[0]) )
-        {
-            string motionName = tokens[1];
-            cout << "MotionName " << motionName << endl;
-            if( 0 == strcmp("frame", tokens[2]) )
-            {
-                int frame = std::atoi(tokens[3]);
-                cout << "frame " << frame << endl;
-            }
-            if( 0 == strcmp("NumEdges", tokens[4]) )
-            {
-                int NumEdges = std::atoi(tokens[5]);
-                cout << "NumEdges " << NumEdges << endl;
-            }
-        }
-        else if( 0 == strcmp("TargetLabel", tokens[0]) )
-        {
-            string TargetLabel = tokens[1];
-            cout << "   TargetLabel " << TargetLabel << endl;
-            if( 0 == strcmp("frame", tokens[2]) )
-            {
-                int frame = std::atoi(tokens[3]);
-                cout << "   frame " << frame << endl;
-            }
-        }
-    }
+    this->mGraph->loadGraph(filename);
 }
 
 void MotionGraph::exportGraph(const std::string& filename)
@@ -137,12 +55,7 @@ void MotionGraph::exportGraph(const std::string& filename)
     for(int i=0; i<this->mMotions.size(); i++){
         motion_filepaths.push_back(this->mMotions.at(i).getFilePath());
     }
-    this->mGraph->exportGraphFile(filename, motion_filepaths);
-}
-
-Graph *MotionGraph::prune()
-{
-
+    this->mGraph->exportGraphFile(filename, this->mMotions);
 }
 
 bool MotionGraph::isExistMotion(const int index) const

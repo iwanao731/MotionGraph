@@ -18,15 +18,18 @@ void ofApp::setup(){
         mMotionGraph.addMotion(motion);
     }
     
-    mMotionGraph.constructGraph(Threshold(2000.f), NCoincidents(5));
+    mMotionGraph.constructGraph(Threshold(500.f), NCoincidents(5));
     mMotionGraph.exportGraph("graph.txt");
     
-    // motion_graph.LoadGraph("graph.txt");
+    //mMotionGraph.LoadGraph("graph.txt");
     // motion_graph.saveImage("file.png");
     //mgPlayer.load("graph.txt");
     
     mMGPlayer.set(mMotionGraph);
     mMGPlayer.play();
+    
+    SMG.Euclid::Graph::loadGraph("graph.txt");
+    SMG.constructeGraph(0, 0);
 }
 
 //--------------------------------------------------------------

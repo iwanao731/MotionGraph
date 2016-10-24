@@ -17,6 +17,7 @@ Node::Node()
     this->mNodeID = -1;
     this->mFrameID = -1;
     this->mEndFrameID = -1;
+    this->mIsVisited = false;
 }
 
 Node::Node(const int id)
@@ -24,6 +25,7 @@ Node::Node(const int id)
     this->mNodeID = id;
     this->mFrameID = -1;
     this->mEndFrameID = -1;
+    this->mIsVisited = false;
 }
 
 Node::~Node()
@@ -96,9 +98,10 @@ const int Node::addEdge(Edge *edge)
     
     bool bEdge = true;
     
+    // check do they have same edge
     for(auto e1 : this->mEdges) {
-        if(e1.getDestination()->getFrameID() == edge->getDestination()->getFrameID()) {
-            if(e1.getDestination()->getMotionLabel() == edge->getDestination()->getMotionLabel()) {
+        if(e1.getDestNode()->getFrameID() == edge->getDestNode()->getFrameID()) {
+            if(e1.getDestNode()->getMotionLabel() == edge->getDestNode()->getMotionLabel()) {
                 bEdge = false;
             }
         }

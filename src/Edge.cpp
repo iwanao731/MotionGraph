@@ -13,13 +13,12 @@ using namespace Euclid;
 
 Edge::Edge()
 {
-    this->mDest = NULL;
+    this->mNode2 = NULL;
 }
 
-Edge::Edge(Node *n, const std::string& label)
+Edge::Edge(Node *n)
 {
-    this->mDest = n;
-    this->mLabel = label;
+    this->mNode2 = n;
 }
 
 Edge::~Edge()
@@ -27,32 +26,22 @@ Edge::~Edge()
     
 }
 
-void Edge::setLabel(const std::string& name)
+void Edge::setDestNode(Node *node)
 {
-    this->mLabel = name;
-}
-
-void Edge::setDestination(Node *node)
-{
-    this->mDest = node;
+    this->mNode2 = node;
 }
 
 void Edge::setStartNode(Node *node)
 {
-    this->mStart = node;
+    this->mNode1 = node;
 }
 
-const std::string& Edge::getLabel() const
+Node *Edge::getDestNode() const
 {
-    return this->mLabel;
-}
-
-Node *Edge::getDestination() const
-{
-    return this->mDest;
+    return this->mNode2;
 }
 
 Node *Edge::getStartNode() const
 {
-    return this->mStart;
+    return this->mNode1;
 }
