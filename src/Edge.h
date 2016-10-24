@@ -23,17 +23,18 @@ namespace Euclid
         Edge(Node *n);
         ~Edge();
         
-        void setDestination(Node *node);
         void setStartNode(Node *node);
+        void setDestination(Node *node);
         
-        Node *getDestination() const;
         Node *getStartNode() const;
-            
+        Node *getDestination() const;
+        
     private:
-        Node *mNode1;
-        Node *mNode2;
         float mWeight;
         float mDistance;
+        Node *mNode1;
+        Node *mNode2;
+        
     };
 }
 #endif /* defined(____Euclid__Edge____) */

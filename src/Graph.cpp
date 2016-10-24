@@ -201,6 +201,7 @@ void Graph::loadGraph(const std::string& filename)
                 cout << "   frame " << frame << endl;
                 n->setFrameID(frame);
                 e->setDestination(n);
+                n->addEdge(e);
             }
         }
     }
@@ -292,7 +293,7 @@ void Graph::draw(const float& wScale, const float& hScale)
                 ofPoint p1(offset.x + frame1 * wScale, offset.y + index1 * hScale);
                 ofPoint p2(offset.x + frame2 * wScale, offset.y + index2 * hScale);
                 ofPoint midPoint( (p1 + p2)/2 );
-                midPoint.set(midPoint.x, midPoint.y + 0.1 * hScale);
+                midPoint.set(midPoint.x, midPoint.y);
                 ofDrawLine(p1, midPoint);
                 ofDrawLine(midPoint, p2);
                 
@@ -403,9 +404,9 @@ void Graph::initIndices(const std::vector<Motion>& motions, const int nMotions)
  3-------------->4			3-------->6---->4
         e2						e5		e6
  */
-void Graph::createTransitions(std::string& m1, const int node1, const int frame1, const int motionID1,
-                              std::string& m2, const int node2, const int frame2, const int motionID2,
-                              const int transiction, const int range, const int totalFrames1, const int totalFrames2)
+void Graph::createTransitions(std::string& m1, int node1, int frame1, int motionID1,
+                              std::string& m2, int node2, int frame2, int motionID2,
+                              int transiction, int range, int totalFrames1, int totalFrames2)
 {
     std::stringstream ss;
     ss << m1 << "_" ;

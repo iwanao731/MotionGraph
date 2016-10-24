@@ -20,36 +20,26 @@ namespace Euclid
     class Threshold;
     class NCoincidents;
 
-    class MotionGraph
+    class MotionGraph 
     {
     public:
         MotionGraph();
         ~MotionGraph();
         
         void addMotion(const Motion& motion);
-        
-        // Motion Graph Function
-        void constructGraph(const Threshold& threshold, const NCoincidents& nCoincidents);
-        Graph *prune(); // under constructing
-        
-        // utility function
-        
-        /// draw MotionGraph structure on 2D
-        void draw(const float& wScale, const float& hScale);
-        
-        bool LoadGraph(const std::string& filename);
-        void exportGraph(const std::string& filename);
-        
-        bool isExistMotion(const int index) const;
         const int getNumMotion() const;
         Motion *getMotion(const int index);
         Graph *getGraph() const;
+        void constructGraph(const Threshold& threshold, const NCoincidents& nCoincidents);
+        void draw(const float& wScale, const float& hScale); // draw MotionGraph structure on 2D
+        bool LoadGraph(const std::string& filename);
+        void exportGraph(const std::string& filename);
+        bool isExistMotion(const int index) const;
         
     private:
         int mAnimCount;
         Graph *mGraph;
         std::vector<Motion> mMotions;
-        
     };
 
     class Threshold

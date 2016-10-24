@@ -58,11 +58,6 @@ void MotionGraph::exportGraph(const std::string& filename)
     this->mGraph->exportGraphFile(filename, this->mMotions);
 }
 
-Graph *MotionGraph::prune()
-{
-
-}
-
 bool MotionGraph::isExistMotion(const int index) const
 {
     if(index < this->mMotions.size())
