@@ -127,8 +127,8 @@ void MotionGraphPlayer::moveBranchMotion()
     if(numEdge > 0) {
         int index = ofRandom(numEdge);
 
-        mNextMotion.mMotionIndex = this->mMGraph.getGraph()->getNode(nodeIndex)->getEdge(index)->getDestination()->getMotionID();
-        mNextMotion.mFrame  = this->mMGraph.getGraph()->getNode(nodeIndex)->getEdge(index)->getDestination()->getFrameID();
+        mNextMotion.mMotionIndex = this->mMGraph.getGraph()->getNode(nodeIndex)->getEdge(index)->getDestNode()->getMotionID();
+        mNextMotion.mFrame  = this->mMGraph.getGraph()->getNode(nodeIndex)->getEdge(index)->getDestNode()->getFrameID();
         
         mMoving = true;        
     }
