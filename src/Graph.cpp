@@ -56,14 +56,16 @@ void Graph::constructGraph(const std::vector<Motion>& motions, const int nMotion
     // initialize
     this->initIndices(motions, nMotions);
     
-    this->mMap = new Map(nMotions);
-    this->mMap->setThreshold(threshold);
-    this->mMap->setNSteps(nCoincidents);
-    this->mMap->constructMap(motions, nMotions); // also export each map file.
+    Map *map;                  // ErrorMap
+
+    map = new Map(nMotions);
+    map->setThreshold(threshold);
+    map->setNSteps(nCoincidents);
+    map->constructMap(motions, nMotions); // also export each map file.
     
-    for(int i=0 ; i<this->mMap->getNRelations(); i++){
-        std::string label1 = this->mMap->getRelations(i, 0);
-        std::string label2 = this->mMap->getRelations(i, 1);
+    for(int i=0 ; i<map->getNRelations(); i++){
+        std::string label1 = map->getRelations(i, 0);
+        std::string label2 = map->getRelations(i, 1);
         
         int index1 = -1, index2 = -1;
         
@@ -80,7 +82,7 @@ void Graph::constructGraph(const std::vector<Motion>& motions, const int nMotion
             std::vector<int> minFrame1, minFrame2;
             
             // Get Minumum
-            nRelations = this->mMap->calcMinimums(i, minFrame1, minFrame2);
+            nRelations = map->calcMinimums(i, minFrame1, minFrame2);
             
             for(j=0; j<nRelations; j++) {
                 if(this->mIndices[index1][minFrame1[j]] < 0 || this->mIndices[index1][minFrame1[j]] > this->mNNodes){
@@ -95,7 +97,7 @@ void Graph::constructGraph(const std::vector<Motion>& motions, const int nMotion
                 
                 this->createTransitions(label1, this->mIndices[index1][minFrame1[j]], minFrame1[j], index1,
                                         label2, this->mIndices[index2][minFrame2[j]], minFrame2[j], index2,
-                                        j, this->mMap->getNSteps(),
+                                        j, map->getNSteps(),
                                         motions.at(index1).getNFrames(), motions.at(index2).getNFrames() );
                 
             }
@@ -188,7 +190,7 @@ void Graph::loadGraph(const std::string& filename)
         {
             Node *n;
             Edge *e;
-            e = new Edge(this->mNodes.back(), tokens[0]);
+            e = new Edge(this->mNodes.back());
 
             string TargetLabel = tokens[1];
             n->setMotionLabel(TargetLabel);
@@ -329,7 +331,7 @@ void Graph::insertNode(Node *n)
                     
                     if(this->mNodes[i]->getFrameID() < n->getFrameID() && n->getFrameID() < this->mNodes[i]->getEdge(j)->getDestination()->getFrameID())
                     {
-                        Edge *e = new Edge(this->mNodes[i]->getEdge(j)->getDestination(), this->mNodes[i]->getMotionLabel());
+                        Edge *e = new Edge(this->mNodes[i]->getEdge(j)->getDestination());
                         n->addEdge(e);
                         this->mNodes[i]->getEdge(j)->setDestination(n);
                         //this->mNodes[i]->setEndFrameID(this->mNodes[i]->getEdge(j)->getDestination()->getFrameID());
@@ -375,7 +377,7 @@ void Graph::initIndices(const std::vector<Motion>& motions, const int nMotions)
     for(auto m : motions) {
         Node *n1 = new Node;
         Node *n2 = new Node;
-        Edge *e = new Edge(n2, m.getLabel());
+        Edge *e = new Edge(n2);
         
         n1->addEdge(e);
         n1->setMotionID(i);
@@ -425,6 +427,6 @@ void Graph::createTransitions(std::string& m1, const int node1, const int frame1
     // TBD
     // not cycle in same motion
     if(motionID1 != motionID2){
-        this->getNode(node1)->addEdge(new Edge(this->getNode(node2),newName));
+        this->getNode(node1)->addEdge(new Edge(this->getNode(node2)));
     }
 }

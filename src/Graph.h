@@ -40,9 +40,8 @@ namespace Euclid
         
     private:
         int **mIndices;             // first : number of motion, second : number of frame
-        int mNNodes;                // Number of Nodes
+        int mNNodes;                // Number of Nodes        
         std::vector<Node*> mNodes;  // Nodes
-        Map *mMap;                  // ErrorMap
 
         int mCurrentMotionIndex;
         int mCurrentFrame;
