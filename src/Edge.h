@@ -30,8 +30,6 @@ namespace Euclid
         Node *getDestNode() const;
         
     private:
-        float mWeight;
-        float mDistance;
         Node *mNode1;
         Node *mNode2;
         
