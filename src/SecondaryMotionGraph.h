@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include "Eigen/Sparse"
 #include "MotionGraph.h"
+#include "SMGNode.h"
 
 class SecondaryMotionGraph : public Euclid::Graph
 {
@@ -22,15 +23,25 @@ public:
     void loadGraph(const string& filename);
     void constructeGraph(const int motionIndex, const int frameIndex);
     
+    int getNumNode();
+
 private:
-    Eigen::SparseMatrix<float> IRF; // Hair Motion
+    
+    vector<SMGNode*> mSMGNodes;
+    Eigen::SparseMatrix<float> mIRF; // Hair Motion
     
     void initialization(const int nodeIndex);
     void expansion();
     void merge();
     
+    int addSMGNode(Euclid::Node *n);
+    void addChildSMGNode(int SMGIndex, Euclid::Node *childNode);
+    
     // Breath First Search
     void BFS(Euclid::Node *n);
+    
+    // Dead node make connecting to another node consider the connection of motion graph;
+    //void backLink();
 };
 
 #endif /* defined(____Secondary__Motion__Graph____) */

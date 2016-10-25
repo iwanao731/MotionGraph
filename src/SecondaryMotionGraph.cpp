@@ -25,37 +25,62 @@ void SMG::loadGraph(const string& filename)
     this->Euclid::Graph::loadGraph(filename);
 }
 
+int SMG::getNumNode()
+{
+    return this->mSMGNodes.size();
+}
+
 void SMG::constructeGraph(const int motionIndex, const int frameIndex)
 {
     std::cout << "start Construct Graph" << std::endl;
     int nodeIndex = this->getNodeindex(motionIndex, frameIndex);
-
     cout << "nodeIndex : " << nodeIndex << endl;
     
     this->initialization(nodeIndex);
-    
     this->expansion();
-    
     this->merge();
     std::cout << "end Construct Graph" << std::endl;
 }
 
 void SMG::initialization(const int nodeIndex)
 {
-    Node *n = this->getNode(nodeIndex);
-    cout << n->getNodeID() << "," << n->getNumEdges() << endl;;
+    Node *startNode = this->getNode(nodeIndex);
+    cout << startNode->getNodeID() << "," << startNode->getNumEdges() << endl;;
     
-    this->BFS(n);
+    this->BFS(startNode);
 }
 
 void SMG::expansion()
 {
-    
+
 }
 
 void SMG::merge()
 {
     
+}
+
+int SMG::addSMGNode(Euclid::Node *n)
+{
+    SMGNode *node;
+    node = new SMGNode;
+    node->setMGNode(n);
+    int index = this->mSMGNodes.size();
+    node->setNodeIndex(index);
+    this->mSMGNodes.push_back(node);
+    return index;
+}
+
+void SMG::addChildSMGNode(int SMGIndex, Node *childNode)
+{
+    SMGNode *smgNode;
+    smgNode = new SMGNode;
+    smgNode->setMGNode(childNode);
+    smgNode->setParent(this->mSMGNodes[SMGIndex]);
+    smgNode->setNodeIndex(mSMGNodes.size());
+    
+    this->mSMGNodes.push_back(smgNode);
+    this->mSMGNodes[SMGIndex]->addChild(smgNode);
 }
 
 // search each node j from node i in a breath-first manner
@@ -77,9 +102,9 @@ void SMG::BFS(Euclid::Node *n)
     nodeQueue.push_back(n);
     depthQueue.push_back(0);
     parentQueue.push_back(0);
-    
-    // 'link' will be used to get all adjacent nodes of a node
-    list<Node*>::iterator link;
+
+    // add new smg node and return SMG index
+    int SMGIndex = this->addSMGNode(n);
     
     while(!nodeQueue.empty())
     {
@@ -87,13 +112,11 @@ void SMG::BFS(Euclid::Node *n)
         n = nodeQueue.front();
         int depth = depthQueue.front();
         int parent = parentQueue.front();
-
         string depthStr;
         for(int i=0; i<depth; i++){
             depthStr += " ";
         }
-            
-        cout << depthStr << n->getNodeID() << ":" << parent << endl;
+        
         nodeQueue.pop_front();
         depthQueue.pop_front();
         parentQueue.pop_front();
@@ -102,14 +125,17 @@ void SMG::BFS(Euclid::Node *n)
         // If a adjacent has not been visited, then mark it visited
         // and enqueue it
         for(int j=0; j<n->getNumEdges(); j++){
-            int index = n->getEdge(j)->getDestNode()->getNodeID();
-            if(!visited[index])
+            int MGIndex = n->getEdge(j)->getDestNode()->getNodeID();
+            if(!visited[MGIndex])
             {
-                visited[index] = true;
+                visited[MGIndex] = true;
                 nodeQueue.push_back(n->getEdge(j)->getDestNode());
                 depthQueue.push_back(depth+1);
                 parentQueue.push_back(n->getNodeID());
+                
+                this->addChildSMGNode(SMGIndex, n->getEdge(j)->getDestNode());
             }
         }
+        SMGIndex++;
     }
 }
