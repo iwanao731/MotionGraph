@@ -22,7 +22,7 @@ public:
 
     void loadGraph(const string& filename);
     void constructeGraph(const int motionIndex, const int frameIndex);
-    
+
     int getNumNode();
 
 private:
@@ -39,9 +39,6 @@ private:
     
     // Breath First Search
     void BFS(Euclid::Node *n);
-    
-    // Dead node make connecting to another node consider the connection of motion graph;
-    //void backLink();
 };
 
 #endif /* defined(____Secondary__Motion__Graph____) */

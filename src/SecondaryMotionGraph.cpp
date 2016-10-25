@@ -33,26 +33,58 @@ int SMG::getNumNode()
 void SMG::constructeGraph(const int motionIndex, const int frameIndex)
 {
     std::cout << "start Construct Graph" << std::endl;
-    int nodeIndex = this->getNodeindex(motionIndex, frameIndex);
-    cout << "nodeIndex : " << nodeIndex << endl;
     
+    int nodeIndex = this->getNodeindex(motionIndex, frameIndex);
+    
+    // build initial secondary motion graph from motion graph
     this->initialization(nodeIndex);
+    
+    // expand for each dead node
     this->expansion();
+    
     this->merge();
+    
     std::cout << "end Construct Graph" << std::endl;
 }
 
 void SMG::initialization(const int nodeIndex)
 {
     Node *startNode = this->getNode(nodeIndex);
-    cout << startNode->getNodeID() << "," << startNode->getNumEdges() << endl;;
     
+    // build initial SMG network
     this->BFS(startNode);
+    
+    // Dead End Node make connecting to another node as Ghost Node considering to the connection of motion graph
+
+    // add Ghost Node at each node
+    for(int j=0; j<this->getNumNode(); j++) {
+        
+        SMGNode *n = this->mSMGNodes[j];
+        
+        // access only dead end node
+        if(!n->hasChildren()) {
+            // add candidate of Ghost Node using Motion Graph network
+            int numEdges = n->getMGNode()->getNumEdges();
+            if(numEdges>0) {
+                for (int i=0; i<numEdges; i++) {
+                    // add children to dead end node
+                    this->addChildSMGNode(n->getNodeIndex(), n->getMGNode()->getEdge(i)->getDestNode());
+                    
+                    // set as Ghost Node
+                    n->getChild(i)->setGhostNode(true);
+                }
+            }else{
+                // (TBD) dead end node should be removed
+            }
+        }else{
+            n->setGhostNode(false);
+        }
+    }
 }
 
 void SMG::expansion()
 {
-
+    
 }
 
 void SMG::merge()
@@ -112,10 +144,6 @@ void SMG::BFS(Euclid::Node *n)
         n = nodeQueue.front();
         int depth = depthQueue.front();
         int parent = parentQueue.front();
-        string depthStr;
-        for(int i=0; i<depth; i++){
-            depthStr += " ";
-        }
         
         nodeQueue.pop_front();
         depthQueue.pop_front();

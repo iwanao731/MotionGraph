@@ -28,6 +28,7 @@ public:
     void setNodeIndex(int index);
     void setMGNode(Euclid::Node *n);
     void setParent(SMGNode *parentNode);
+    void setGhostNode(bool bValue);
     
     int getNodeIndex();
     int getNumChildren();

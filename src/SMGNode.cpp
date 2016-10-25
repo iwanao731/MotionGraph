@@ -53,6 +53,11 @@ void SMGNode::setParent(SMGNode *parentNode)
     this->mHasParent = true;
 }
 
+void SMGNode::setGhostNode(bool bValue)
+{
+    this->mGhostNode = bValue;
+}
+
 void SMGNode::addChild(SMGNode *childNode)
 {
     this->mHasChild = true;
