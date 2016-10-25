@@ -42,3 +42,14 @@ SMGNode *SMGEdge::getDestNode() const
 {
     return this->mNode2;
 }
+
+const float SMGEdge::getError() const
+{
+    return this->mError;
+}
+
+bool SMGEdge::compareEdgeError(const SMGEdge* lhs, const SMGEdge* rhs)
+{
+    return (lhs->mError < rhs->mError);
+}
+

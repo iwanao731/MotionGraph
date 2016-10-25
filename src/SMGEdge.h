@@ -26,6 +26,9 @@ public:
     
     SMGNode *getStartNode() const;
     SMGNode *getDestNode() const;
+    const float getError() const;
+    
+    static bool compareEdgeError(const SMGEdge* lhs, const SMGEdge* rhs);
     
 private:
     float mError;
