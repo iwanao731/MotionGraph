@@ -15,7 +15,7 @@ SMGEdge::SMGEdge() : mError(0.0f)
 
 SMGEdge::~SMGEdge()
 {
-    
+
 }
 
 void SMGEdge::setStartNode(SMGNode *node)
@@ -41,6 +41,16 @@ SMGNode *SMGEdge::getStartNode() const
 SMGNode *SMGEdge::getDestNode() const
 {
     return this->mNode2;
+}
+
+Euclid::Node *SMGEdge::getStartMGNode() const
+{
+    return mNode1->getMGNode();
+}
+
+Euclid::Node *SMGEdge::getDestMGNode() const
+{
+    return mNode2->getMGNode();
 }
 
 const float SMGEdge::getError() const

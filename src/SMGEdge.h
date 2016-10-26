@@ -26,6 +26,8 @@ public:
     
     SMGNode *getStartNode() const;
     SMGNode *getDestNode() const;
+    Euclid::Node *getStartMGNode() const;
+    Euclid::Node *getDestMGNode() const;
     const float getError() const;
     
     static bool compareEdgeError(const SMGEdge* lhs, const SMGEdge* rhs);
