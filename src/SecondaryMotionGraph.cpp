@@ -43,7 +43,9 @@ void SMG::constructeGraph(const int motionIndex, const int frameIndex)
     this->initialization(nodeIndex);
     
     // expand for each dead node
-    this->expansion();
+    for(int k=0; k<5; k++){
+        cout << "error :  " << this->expansion() << endl;
+    }
     
     // 
     this->merge();
@@ -62,24 +64,25 @@ void SMG::initialization(const int nodeIndex)
     this->removeDeadEnd();  //Actually we have to choose next state of the most minimum simulation error
 }
 
-void SMG::expansion()
+float SMG::expansion()
 {
     cout << "start expansion" << endl;
     
-    // 	descending sort considering error value
+    // 	Ascending sort considering error value
+    std::sort(mEdgeQueue.begin(), mEdgeQueue.end(), SMGEdge::compareEdgeError);
+    SMGEdge *largestErrorEdge = mEdgeQueue.back();
+    this->addChildSMGNode(largestErrorEdge->getStartNode(), largestErrorEdge->getDestMGNode());
+    
+    // remove the edge
+    this->mEdgeQueue.pop_back();
+    
+    // re-initialization
+    this->initialization(this->mSMGNodes.back()->getMGNode()->getNodeID());
     std::sort(mEdgeQueue.begin(), mEdgeQueue.end(), SMGEdge::compareEdgeError);
 
-//    for (auto m : mEdgeQueue) {
-//        std::cout << m->getError() << std::endl;
-//    }
-    
-//    int index = 0;
-//    for (auto mm : mMGNodes){
-//        cout << "No. " << index << " : " << mm.size() << endl;
-//        index++;
-//    }
-    
+    cout << "size: " << mEdgeQueue.size() << endl;
     cout << "end expansion" << endl;
+    return mEdgeQueue.back()->getError();
 }
 
 void SMG::merge()
@@ -102,19 +105,24 @@ int SMG::addSMGNode(Euclid::Node *n)
     return index;
 }
 
-void SMG::addChildSMGNode(int SMGIndex, Node *childNode)
+void SMG::addChildSMGNode(SMGNode *parentNode, Node *childNode)
 {
     SMGNode *smgNode;
     smgNode = new SMGNode;
     smgNode->setMGNode(childNode);
-    smgNode->setParent(this->mSMGNodes[SMGIndex]);
+    smgNode->setParent(parentNode);
     smgNode->setNodeIndex(mSMGNodes.size());
     
     // for expansion
     this->mMGNodes[childNode->getNodeID()].push_back(smgNode);
     
     this->mSMGNodes.push_back(smgNode);
-    this->mSMGNodes[SMGIndex]->addChild(smgNode);
+    parentNode->addChild(smgNode);
+}
+
+void SMG::setChildSMGNode(SMGNode *parentNode, SMGNode *childNode)
+{
+    parentNode->addChild(childNode);
 }
 
 // search each node j from node i in a breath-first manner
@@ -127,15 +135,15 @@ void SMG::BFS(Euclid::Node *n)
     
     // Create a queue for BFS
     list<Node*> nodeQueue;
-    list<int> depthQueue;
-    list<int> parentQueue;
+//    list<int> depthQueue;
+//    list<int> parentQueue;
     
     // Mark the current node as visited and enqueue it
     visited[n->getNodeID()] = true;
     
     nodeQueue.push_back(n);
-    depthQueue.push_back(0);
-    parentQueue.push_back(0);
+    //depthQueue.push_back(0);
+    //parentQueue.push_back(0);
 
     // add new smg node and return SMG index
     int SMGIndex = this->addSMGNode(n);
@@ -144,12 +152,12 @@ void SMG::BFS(Euclid::Node *n)
     {
         // Dequeue a node from queue and print it
         n = nodeQueue.front();
-        int depth = depthQueue.front();
-        int parent = parentQueue.front();
+        //int depth = depthQueue.front();
+        //int parent = parentQueue.front();
         
         nodeQueue.pop_front();
-        depthQueue.pop_front();
-        parentQueue.pop_front();
+        //depthQueue.pop_front();
+        //parentQueue.pop_front();
         
         // Get all adjacent nodes of the dequeued node *n
         // If a adjacent has not been visited, then mark it visited
@@ -160,10 +168,11 @@ void SMG::BFS(Euclid::Node *n)
             {
                 visited[MGIndex] = true;
                 nodeQueue.push_back(n->getEdge(j)->getDestNode());
-                depthQueue.push_back(depth+1);
-                parentQueue.push_back(n->getNodeID());
+                //depthQueue.push_back(depth+1);
+                //parentQueue.push_back(n->getNodeID());
                 
-                this->addChildSMGNode(SMGIndex, n->getEdge(j)->getDestNode());
+                //cout << n->getNodeID() << " : " << SMGIndex << std::endl;
+                this->addChildSMGNode(this->mSMGNodes[SMGIndex], n->getEdge(j)->getDestNode());
             }
         }
         SMGIndex++;
@@ -190,25 +199,29 @@ void SMG::removeDeadEnd()
             int numEdges = n->getMGNode()->getNumEdges(); // (TBD)<- Select next candidate based on similarity of physics model
             if(numEdges>0) {
                 for (int i=0; i<numEdges; i++) {
+                    
                     // add children to dead end node
-                    this->addChildSMGNode(n->getNodeIndex(), n->getMGNode()->getEdge(i)->getDestNode());
+                    //this->addChildSMGNode(n, n->getMGNode()->getEdge(i)->getDestNode());
+                    
+                    // set
+                    SMGNode *child = this->mMGNodes[n->getMGNode()->getEdge(i)->getDestNode()->getNodeID()].front();
+                    this->setChildSMGNode(n, child);
                     
                     // add transition error queue from node1 to node2
-                    this->addEdgeQueue(n, this->mSMGNodes.back());  // (TBD) necessary to consider simulation error
+                    this->addEdgeQueue(n, child);  // (TBD) necessary to consider simulation error
                     
                     // set as Ghost Node
-                    n->getChild(i)->setGhostNode(true);
+                    //n->getChild(i)->setGhostNode(true);
                 }
             }else{
                 // (TBD) dead end node should be removed
             }
         }else{
-            n->setGhostNode(false);
+            //n->setGhostNode(false);
         }
     }
     
     cout << "end removeDeadEnd" << endl;
-    
 }
 
 // (TBD) necessary to consider simulation error
@@ -218,13 +231,8 @@ void SMG::addEdgeQueue(SMGNode* node1, SMGNode *node2)
     edge = new SMGEdge;
     edge->setStartNode(node1);
     edge->setDestNode(node2);
-    edge->setError(ofRandom(100));   // oF function temporary
+    edge->setError(ofRandom(100));   // oF function temporary <- should be put simulation error here;
     this->mEdgeQueue.push_back(edge);
-
-    int index = node2->getMGNode()->getNodeID();
-    
-    cout << this->mEdgeQueue.back()->getError() << " : " << node2->getNodeIndex() << " : " << node1->getNodeIndex() << "->" << this->mMGNodes[index][0]->getNodeIndex() << endl;
-    
 }
 
 

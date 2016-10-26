@@ -35,12 +35,14 @@ private:
     std::vector<std::vector<SMGNode*> > mMGNodes; // SMG Nodes at each MG Node.
     
     void initialization(const int nodeIndex);
-    void expansion();
+    float expansion();
     void merge();
     
     int addSMGNode(Euclid::Node *n);
-    void addChildSMGNode(int SMGIndex, Euclid::Node *childNode);
+    void addChildSMGNode(SMGNode *parentNode, Euclid::Node *childNode);
     void addEdgeQueue(SMGNode* node1, SMGNode *node2);
+    
+    void setChildSMGNode(SMGNode *parentNode, SMGNode *childNode);
     
     /// Breath First Search
     void BFS(Euclid::Node *n);
