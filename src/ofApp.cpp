@@ -2,13 +2,14 @@
 #include "Motion.h"
 #include "BVHConverter.h"
 
+//#define BUILD_GRAPH
 //--------------------------------------------------------------
 void ofApp::setup(){
     
     ofSetFrameRate(60.f);
-    
     mMotionIndex = 0;
     
+#ifdef BUILD_GRAPH
     // Load Motion Dataset
     ofDirectory dir;
     dir.listDir("CMU");
@@ -17,18 +18,16 @@ void ofApp::setup(){
         loadMotion(dir.getPath(i), motion);
         mMotionGraph.addMotion(motion);
     }
-    
+
     mMotionGraph.constructGraph(Threshold(500.f), NCoincidents(5));
-    mMotionGraph.exportGraph("graph.txt");
-    
-    //mMotionGraph.LoadGraph("graph.txt");
-    // motion_graph.saveImage("file.png");
-    //mgPlayer.load("graph.txt");
-    
-    mMGPlayer.set(mMotionGraph);
+    mMotionGraph.exportGraph("sample");
+#endif
+    // load graph and motion
+    mMGPlayer.load("sample");
     mMGPlayer.play();
     
-    SMG.Euclid::Graph::loadGraph("graph.txt");
+    // secondary mo
+    SMG.loadGraph("sample_graph.txt");
     SMG.constructeGraph(0, 0);
 }
 
@@ -39,8 +38,9 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    mMotionGraph.draw(ofGetMouseX()/100.f, ofGetMouseY());
-    
+//    mMotionGraph.draw(ofGetMouseX()/100.f, ofGetMouseY());
+    mMGPlayer.drawGraph(ofGetMouseX()/100.f, ofGetMouseY());
+                        
     ofEnableDepthTest();
     ofEnableLighting();
     mLight.enable();
