@@ -10,7 +10,7 @@
 
 MotionGraphPlayer::MotionGraphPlayer() : mOffsetFrame(3), mixValue(1.0f), mMovingTime(0), mMoving(false)
 {
-    
+    mCurrentMotion.mMotionIndex = 0;
 }
 
 MotionGraphPlayer::~MotionGraphPlayer()
@@ -28,7 +28,6 @@ void MotionGraphPlayer::set(const MotionGraph& motionGraph)
         mBvh[i].load(this->mMGraph.getMotion(i)->getFilePath());
         mBvh[i].setLoop(true);
         mBvh[i].play();
-        std::cout << "Num Joints : " << mBvh[i].getNumJoints() << std::endl;
     }
     
     mViewer = &mBvh[mCurrentMotion.mMotionIndex];
@@ -36,7 +35,19 @@ void MotionGraphPlayer::set(const MotionGraph& motionGraph)
 
 void MotionGraphPlayer::load(const std::string& filename)
 {
-    this->mMGraph.LoadGraph(filename);
+    this->mMGraph.loadGraph(filename + "_graph.txt");
+    this->mMGraph.loadMotionList(filename + "_motionlist.txt");
+
+    // load motion
+    mNumMotions = this->mMGraph.getNumMotion();
+    mBvh = new ofxDigitalDanceBvh [mNumMotions];
+    for (int i=0; i<this->getNumMotions(); i++) {
+        mBvh[i].load(this->mMGraph.getMotion(i)->getFilePath());
+        mBvh[i].setLoop(true);
+        mBvh[i].play();
+    }
+
+    mViewer = &mBvh[mCurrentMotion.mMotionIndex];
 }
 
 void MotionGraphPlayer::update()
