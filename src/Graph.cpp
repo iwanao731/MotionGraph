@@ -14,6 +14,8 @@ Graph::Graph()
 {
     this->mIndices = NULL;
     this->mNNodes = 0;
+    this->mCurrentMotionIndex = 0;
+    this->mCurrentFrame = 0;
 }
 
 Graph::~Graph()
@@ -34,8 +36,8 @@ Node* Graph::getNode(const int node)
 
 const bool Graph::hasBranch(const int motionIndex, const int frameId)
 {
-    mCurrentMotionIndex = motionIndex;
-    mCurrentFrame = frameId;
+    this->mCurrentMotionIndex = motionIndex;
+    this->mCurrentFrame = frameId;
     if(this->mIndices[motionIndex][frameId] > 0)
         return true;
     else
@@ -114,8 +116,10 @@ void Graph::loadGraph(const std::string& filename)
     
     std::ifstream inFile;
     inFile.open(label, std::ios_base::in);
-    if(!inFile)
+    if(!inFile){
+        cout << "counldn't find : " << label << endl;
         return false;
+    }
     
     const int MAX_LINE_CHAR = 512;
     char szLine[MAX_LINE_CHAR] = "";
@@ -157,23 +161,20 @@ void Graph::loadGraph(const std::string& filename)
         if( 0 == strcmp("MotionNum", tokens[0]) )
         {
             int motionNum = std::atoi(tokens[1]);
+            cout << "motionNum : " << motionNum << endl;
             this->mIndices = new int *[motionNum];
-            cout << "MotionNum " << motionNum << endl;
         }
-        else if( 0 == strcmp("MotionPath", tokens[0]) )
+        else if ( 0 == strcmp("MotionLabel", tokens[0]) )
         {
-            string motionPath = tokens[1];
             int motionIndex = this->mMapLabelIndex.size();
+            string motionLabel = tokens[1];
+            this->mMapLabelIndex.insert( map<std::string, int>::value_type( motionLabel, motionIndex ) );
             
-            if ( 0 == strcmp("MotionLabel", tokens[2]) )
+            cout << "motionNum : " << motionLabel << endl;
+
+            if ( 0 == strcmp("frameNum", tokens[2]) )
             {
-                string motionLabel = tokens[3];
-                this->mMapLabelIndex.insert( map<std::string, int>::value_type( motionLabel, motionIndex ) );
-            }
-            
-            if ( 0 == strcmp("frameNum", tokens[4]) )
-            {
-                int numFrame = std::atoi(tokens[5]);
+                int numFrame = std::atoi(tokens[3]);
                 this->mIndices[motionIndex] = new int [numFrame];
                 
                 // initialization
@@ -188,10 +189,11 @@ void Graph::loadGraph(const std::string& filename)
             if( 0 == strcmp("frame", tokens[2]) )
             {
                 int frame = std::atoi(tokens[3]);
+                auto index = mMapLabelIndex.find(motionName);
                 Node *n = new Node;
                 n->setFrameID(frame);
+                n->setMotionID(index->second);
                 n->setMotionLabel(motionName);
-                auto index = mMapLabelIndex.find(motionName);
                 this->mIndices[index->second][frame] = this->addNode(n);
             }
         }
@@ -216,19 +218,13 @@ void Graph::loadGraph(const std::string& filename)
 void Graph::exportGraphFile(const string& filename, const std::vector<Motion>& motion)
 {
     std::cout << "export graph file: " << endl;
-    std::stringstream ss;
-    ss << filename;
     
-    // using openFrameworks utility function
-    ofFile file;
-    std::string label = file.getAbsolutePath() + "/" + ss.str();
-    
-    std::ofstream ofs(label);
+    std::ofstream ofs(filename);
     if(!ofs) {
         std::cerr << "Failed open file" << std::endl;
         std::exit(1);
     }else{
-        cout << "export... " << ss.str() << endl;
+        cout << "export... " << filename << endl;
     }
 
     int motionNum = motion.size();
@@ -238,8 +234,7 @@ void Graph::exportGraphFile(const string& filename, const std::vector<Motion>& m
     ofs << "MotionNum " << motionNum << endl;
     
     for(int i=0; i<motionNum; i++) {
-        ofs <<  "MotionPath "   << motion[i].getFilePath()  << " " <<
-                "MotionLabel "  << motion[i].getLabel()     << " " <<
+        ofs <<  "MotionLabel "  << motion[i].getLabel()     << " " <<
                 "frameNum "     << motion[i].getNFrames()   << std::endl;
     }
 
