@@ -30,8 +30,12 @@ const int Graph::getNumNodes() const
 
 Node* Graph::getNode(const int node)
 {
-    if(node >= this->mNNodes || node < 0) return NULL;
-    else return this->mNodes.at(node);
+    if(node >= this->mNNodes || node < 0){
+        std::cerr << "can't find the node index : " << node << "/" << &this->mNodes << std::endl;
+        return NULL;
+    }
+    else
+        return this->mNodes.at(node);
 }
 
 const bool Graph::hasBranch(const int motionIndex, const int frameId)
@@ -178,7 +182,7 @@ void Graph::loadGraph(const std::string& filename)
                 this->mIndices[motionIndex] = new int [numFrame];
                 
                 // initialization
-                for(int i=0; i<this->mMapLabelIndex.size(); i++) {
+                for(int i=0; i<numFrame; i++) {
                     this->mIndices[motionIndex][i] = -1;
                 }
             }
