@@ -96,6 +96,11 @@ void MotionGraphPlayer::draw()
     ofPopMatrix();
 }
 
+void MotionGraphPlayer::drawGraph(const float& wScale, const float& hScale)
+{
+    this->mMGraph.draw(wScale, hScale);
+}
+
 const bool MotionGraphPlayer::isPlaying() const
 {
     return this->mPlaying;

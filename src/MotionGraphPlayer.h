@@ -35,6 +35,7 @@ public:
     void play();
     void stop();
     void draw();
+    void drawGraph(const float& wScale, const float& hScale);
     const bool isPlaying() const;
     
     const int getNumMotions() const;
