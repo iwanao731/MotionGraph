@@ -2,6 +2,8 @@
 
 This is Motion Graph Library.
 
+<img src="https://github.com/iwanao731/MotionGraph/blob/develop/bin/data/MotionGraph.gif" alt="image" title="image">
+
 ---
 "Motion Graph"  
 Lucas Kovar, Michael Gleicher and Frederic Pighin  
