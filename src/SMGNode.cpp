@@ -57,6 +57,11 @@ void SMGNode::setGhostNode(bool bValue)
     this->mIsGhostNode = bValue;
 }
 
+void SMGNode::setPosition(ofPoint& pos)
+{
+    this->mPos = pos;
+}
+
 void SMGNode::addChild(SMGNode *childNode)
 {
     this->mHasChild = true;
@@ -71,6 +76,11 @@ const int SMGNode::getNodeIndex() const
 const int SMGNode::getNumChildren() const
 {
     return this->mChildren.size();
+}
+
+ofPoint SMGNode::getPosition() const
+{
+    return this->mPos;
 }
 
 SMGNode* SMGNode::getParent() const

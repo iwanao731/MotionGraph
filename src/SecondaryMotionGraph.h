@@ -24,8 +24,9 @@ public:
     SecondaryMotionGraph();
     virtual ~SecondaryMotionGraph();
 
-    void loadGraph(std::string& filename);
+    void loadGraph(const std::string& filename);
     void constructeGraph(int motionIndex, int frameIndex);
+    void drawTree();
 
     const int getNumSMGNodes() const;
 
@@ -36,7 +37,7 @@ private:
     std::vector<SMGEdge*> mEdgeQueue;
     std::vector<std::vector<SMGNode*> > mMGNodes; // SMG Nodes at each MG Node.
     
-    void initialization(const int nodeIndex);
+    void initialization(int nodeIndex);
     float expansion();
     void merge();
     
@@ -51,6 +52,7 @@ private:
     
     /// 
     void removeDeadEnd();
+    
 };
 
 #endif /* defined(____Secondary__Motion__Graph____) */

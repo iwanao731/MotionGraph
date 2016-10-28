@@ -10,6 +10,8 @@
 
 using SMG = SecondaryMotionGraph; // same meaning typedef (C++11)
 
+using namespace Euclid;
+
 SMG::SecondaryMotionGraph()
 {
     
@@ -20,12 +22,31 @@ SMG::~SecondaryMotionGraph()
     
 }
 
-void SMG::loadGraph(std::string& filename)
+void SMG::loadGraph(const std::string& filename)
 {
     this->Euclid::Graph::loadGraph(filename);
     
     cout << "node size : " << this->Graph::getNumNodes() << endl;
     mMGNodes.resize(this->Graph::getNumNodes());
+}
+
+void SMG::drawTree()
+{
+    ofPushMatrix();
+    
+    ofDrawCircle(0, 0, 0);
+    
+    for(auto m : mSMGNodes){
+        ofPoint p(0,0,0);
+        m->setPosition(p);
+        cout << m->getNodeIndex() << " : ";
+        for(int i=0; i<m->getNumChildren(); i++){
+            cout << m->getChild(i)->getNodeIndex() << ",";
+        }
+        cout << endl;
+    }
+    
+    ofPopMatrix();
 }
 
 const int SMG::getNumSMGNodes() const
@@ -43,17 +64,17 @@ void SMG::constructeGraph(int motionIndex, int frameIndex)
     this->initialization(nodeIndex);
     
     // expand for each dead node
-    for(int k=0; k<5; k++){
+//    for(int k=0; k<5; k++){
         cout << "error :  " << this->expansion() << endl;
-    }
+//    }
     
-    // 
+    //
     this->merge();
     
     std::cout << "end Construct Graph" << std::endl;
 }
 
-void SMG::initialization(const int nodeIndex)
+void SMG::initialization(int nodeIndex)
 {
     Node *startNode = this->getNode(nodeIndex);
     
@@ -87,7 +108,9 @@ float SMG::expansion()
 
 void SMG::merge()
 {
+    std::cout << "starting merge ..." << std::endl;
     
+    std::cout << "end merge ..." << std::endl;
 }
 
 int SMG::addSMGNode(Euclid::Node *n)
@@ -171,7 +194,7 @@ void SMG::BFS(Euclid::Node *n)
                 //depthQueue.push_back(depth+1);
                 //parentQueue.push_back(n->getNodeID());
                 
-                //cout << n->getNodeID() << " : " << SMGIndex << std::endl;
+                cout << SMGIndex << "," << n->getEdge(j)->getDestNode()->getNodeID() << endl;
                 this->addChildSMGNode(this->mSMGNodes[SMGIndex], n->getEdge(j)->getDestNode());
             }
         }
@@ -225,7 +248,7 @@ void SMG::removeDeadEnd()
 }
 
 // for calculate random value from 0 to max.
-int randomError(int max) {
+int randomError(float max) {
     return (max * rand() / float(RAND_MAX)) * (1.0f - std::numeric_limits<float>::epsilon());
 }
 
@@ -236,8 +259,9 @@ void SMG::addEdgeQueue(SMGNode* node1, SMGNode *node2)
     edge = new SMGEdge;
     edge->setStartNode(node1);
     edge->setDestNode(node2);
-
-    edge->setError(randomError(100)); //  <- (TBD) should be put simulation error here;
+    
+    edge->setError(randomError(100)); //  <- (TBD) should be put simulation error here
+    
     this->mEdgeQueue.push_back(edge);
 }
 

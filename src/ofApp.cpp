@@ -2,7 +2,8 @@
 #include "Motion.h"
 #include "BVHConverter.h"
 
-#define BUILD_GRAPH
+//#define BUILD_GRAPH
+//#define MGPLAY
 //--------------------------------------------------------------
 void ofApp::setup(){
     
@@ -14,36 +15,43 @@ void ofApp::setup(){
 #ifdef BUILD_GRAPH
     // Load Motion Dataset
     ofDirectory dir;
-    dir.listDir("Male1");
+    dir.listDir("CMU");
+
+//    dir.listDir("Male1");
     for(int i=0; i<dir.size(); i++){
         Motion motion;
         loadMotion(dir.getPath(i), motion);
         mMotionGraph.addMotion(motion);
     }
 
-    mMotionGraph.constructGraph(Threshold(500.f), NCoincidents(200));
+    mMotionGraph.constructGraph(Threshold(500.f), NCoincidents(5));
     mMotionGraph.exportGraph("sample");
     mMotionGraph.clear();
 #endif
-    
+
+#ifdef MGPLAY
     // load graph and motion
     mMGPlayer.load("sample");
     mMGPlayer.setLoop(false);
     mMGPlayer.play();
+#endif
     
     // secondary motion graph
-//    SMG.loadGraph("sample_graph.txt");
-//    SMG.constructeGraph(0, 0);
+    SMG.loadGraph("sample_graph.txt");
+    SMG.constructeGraph(0, 0);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+#ifdef MGPLAY
     mMGPlayer.update();
+#endif
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    
+
+#ifdef MGPLAY
     if(bGraphDraw) {
         ofSetColor(255);
         mMGPlayer.drawGraph(ofGetMouseX()/100.f, ofGetMouseY());
@@ -74,10 +82,14 @@ void ofApp::draw(){
     ofDrawBitmapString("reset position (r)", ofGetWidth()-300, 100);
     ofDrawBitmapString("change motion (key <- or ->) ", ofGetWidth()-300, 120);
     ofDrawBitmapString("start / stop (space) : " + ofToString(mMGPlayer.isPlaying() == true ? "playing" : "stop"), ofGetWidth()-300, 140);
+#endif
+    
+    SMG.drawTree();
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+ #ifdef MGPLAY
     switch (key) {
         case 'f':
             ofToggleFullscreen();
@@ -119,6 +131,7 @@ void ofApp::keyPressed(int key){
         default:
             break;
     }
+#endif
 }
 
 //--------------------------------------------------------------
