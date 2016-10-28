@@ -17,7 +17,6 @@ Node::Node()
     this->mNodeID = -1;
     this->mFrameID = -1;
     this->mEndFrameID = -1;
-    this->mIsVisited = false;
 }
 
 Node::Node(const int id)
@@ -25,7 +24,6 @@ Node::Node(const int id)
     this->mNodeID = id;
     this->mFrameID = -1;
     this->mEndFrameID = -1;
-    this->mIsVisited = false;
 }
 
 Node::~Node()

@@ -26,15 +26,22 @@ namespace Euclid
         MotionGraph();
         ~MotionGraph();
         
+        // adder
         void addMotion(const Motion& motion);
+        
+        // getter
         const int getNumMotion() const;
         Motion *getMotion(const int index);
         Graph *getGraph() const;
+        
+        // fundamental function
+        bool loadGraph(const std::string& filename);
+        bool loadMotionList(const std::string& motionList);   // TBD
+        bool isExistMotion(const int index) const;
+        void exportGraph(const std::string& filename);
         void constructGraph(const Threshold& threshold, const NCoincidents& nCoincidents);
         void draw(const float& wScale, const float& hScale); // draw MotionGraph structure on 2D
-        bool LoadGraph(const std::string& filename);
-        void exportGraph(const std::string& filename);
-        bool isExistMotion(const int index) const;
+        void clear();
         
     private:
         int mAnimCount;
