@@ -8,8 +8,6 @@
 
 #include "SMGEdge.h"
 
-using namespace Euclid;
-
 SMGEdge::SMGEdge() : mError(0.0f)
 {
     
@@ -30,7 +28,7 @@ void SMGEdge::setDestNode(SMGNode *node)
     this->mNode2 = node;
 }
 
-void SMGEdge::setError(float errorValue)
+void SMGEdge::setError(const float &errorValue)
 {
     this->mError = errorValue;
 }
@@ -45,23 +43,13 @@ SMGNode *SMGEdge::getDestNode() const
     return this->mNode2;
 }
 
-Node *SMGEdge::getStartMGNode() const
+Euclid::Node *SMGEdge::getStartMGNode() const
 {
-    // If mNode1 does not have actual value, return null pointer
-    if(!mNode1)
-    {
-        return nullptr;
-    }
     return mNode1->getMGNode();
 }
 
-Node *SMGEdge::getDestMGNode() const
+Euclid::Node *SMGEdge::getDestMGNode() const
 {
-    // If mNode1 does not have actual value, return null pointer
-    if(!mNode2)
-    {
-        return nullptr;
-    }
     return mNode2->getMGNode();
 }
 
@@ -72,10 +60,6 @@ const float SMGEdge::getError() const
 
 bool SMGEdge::compareEdgeError(const SMGEdge* lhs, const SMGEdge* rhs)
 {
-    // If mNode1 does not have actual value, return null pointer
-    if(!lhs || !rhs){
-        return nullptr;
-    }
     return (lhs->mError < rhs->mError);
 }
 

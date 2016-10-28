@@ -20,8 +20,7 @@ Graph::Graph()
 
 Graph::~Graph()
 {
-    mNodes.clear();
-    mMapLabelIndex.clear();
+    
 }
 
 const int Graph::getNumNodes() const
@@ -32,8 +31,8 @@ const int Graph::getNumNodes() const
 Node* Graph::getNode(const int node)
 {
     if(node >= this->mNNodes || node < 0){
-        std::cerr << "can't find the node index : " << node << "/" << this->mNNodes << std::endl;
-        assert(node < this->mNNodes && node >= 0);
+        std::cerr << "can't find the node index : " << node << "/" << &this->mNodes << std::endl;
+        return NULL;
     }
     else
         return this->mNodes.at(node);
@@ -43,7 +42,7 @@ const bool Graph::hasBranch(const int motionIndex, const int frameId)
 {
     this->mCurrentMotionIndex = motionIndex;
     this->mCurrentFrame = frameId;
-    if(this->mIndices[motionIndex][frameId] > 0)    // (TBD) sometimes had been permited return the number such as 2910892
+    if(this->mIndices[motionIndex][frameId] > 0)
         return true;
     else
         return false;
@@ -175,7 +174,7 @@ void Graph::loadGraph(const std::string& filename)
             string motionLabel = tokens[1];
             this->mMapLabelIndex.insert( map<std::string, int>::value_type( motionLabel, motionIndex ) );
             
-            cout << "motion label : " << motionLabel << endl;
+            cout << "motionNum : " << motionLabel << endl;
 
             if ( 0 == strcmp("frameNum", tokens[2]) )
             {
@@ -260,7 +259,10 @@ void Graph::exportGraphFile(const string& filename, const std::vector<Motion>& m
 
 void Graph::draw(const float& wScale, const float& hScale)
 {
+    ofSetColor(50);
+    
     ofVec2f offset(10,10);
+    ofSetColor(0);
     int count = 0;
     for(int i=0; i<this->getNumNodes(); i++) {
         
