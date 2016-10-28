@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <random>
 #include "MotionGraph.h"
 #include "ofxDigitalDanceBvh.h"
 
@@ -21,6 +22,8 @@ using namespace Euclid;
 struct MotionInfo {
     int mFrame;
     int mMotionIndex;
+    ofQuaternion quat;
+    ofVec3f trans;
 };
 
 class MotionGraphPlayer
@@ -36,8 +39,13 @@ public:
     void stop();
     void draw();
     void drawGraph(const float& wScale, const float& hScale);
+    void resetPosition();
     const bool isPlaying() const;
     
+    // setter
+    const bool setLoop(bool flag) const;
+    
+    // geter
     const int getNumMotions() const;
     const int getCurrentMotionIndex() const;
     
@@ -49,17 +57,18 @@ private:
     int mMovingTime;
     int mNumMotions;
     int mOffsetFrame;
-    float mixValue;
+    float mMixValue;
+    ofMatrix4x4 mTrackPoseMatrix;
+    MotionInfo mPrevMotion;
     MotionInfo mCurrentMotion;
     MotionInfo mNextMotion;
-    MotionGraph mMGraph;
+    MotionGraph *mMGraph;
     ofxDigitalDanceBvh *mBvh;
     ofxDigitalDanceBvh *mViewer;
     
     const bool hasBranch() const;
-    void moveBranchMotion();
-    const float mixMotions(const MotionInfo& current, MotionInfo& next);
-    const float calcInterpolateValue(const int p, const int k);
+    const bool moveBranchMotion();
+    const float setFrameMotionBlend(const MotionInfo& current, MotionInfo& next);
 };
 
 #endif /* defined(____MotionGraphPlayer__) */

@@ -8,9 +8,11 @@
 
 #include "MotionGraphPlayer.h"
 
-MotionGraphPlayer::MotionGraphPlayer() : mOffsetFrame(3), mixValue(1.0f), mMovingTime(0), mMoving(false)
+MotionGraphPlayer::MotionGraphPlayer() : mOffsetFrame(10), mMixValue(1.0f), mMovingTime(0), mMoving(false)
 {
     mCurrentMotion.mMotionIndex = 0;
+    this->mMGraph = new MotionGraph;
+    mTrackPoseMatrix.makeIdentityMatrix();
 }
 
 MotionGraphPlayer::~MotionGraphPlayer()
@@ -20,58 +22,34 @@ MotionGraphPlayer::~MotionGraphPlayer()
 
 void MotionGraphPlayer::set(const MotionGraph& motionGraph)
 {
-    mMGraph = motionGraph;
-    mNumMotions = this->mMGraph.getNumMotion();
-    mBvh = new ofxDigitalDanceBvh [mNumMotions];
-    
-    for (int i=0; i<this->getNumMotions(); i++) {
-        mBvh[i].load(this->mMGraph.getMotion(i)->getFilePath());
-        mBvh[i].setLoop(true);
-        mBvh[i].play();
-    }
-    
-    mViewer = &mBvh[mCurrentMotion.mMotionIndex];
+//    mMGraph = motionGraph;
+//    mNumMotions = this->mMGraph.getNumMotion();
+//    mBvh = new ofxDigitalDanceBvh [mNumMotions];
+//    
+//    for (int i=0; i<this->getNumMotions(); i++) {
+//        mBvh[i].load(this->mMGraph.getMotion(i)->getFilePath());
+//        mBvh[i].setLoop(true);
+//        //mBvh[i].play();
+//    }
+//    
+//    mViewer = &mBvh[mCurrentMotion.mMotionIndex];
 }
 
 void MotionGraphPlayer::load(const std::string& filename)
 {
-    this->mMGraph.loadGraph(filename + "_graph.txt");
-    this->mMGraph.loadMotionList(filename + "_motionlist.txt");
+    this->mMGraph->loadGraph(filename + "_graph.txt");
+    this->mMGraph->loadMotionList(filename + "_motionlist.txt");
 
     // load motion
-    mNumMotions = this->mMGraph.getNumMotion();
+    mNumMotions = this->mMGraph->getNumMotion();
     mBvh = new ofxDigitalDanceBvh [mNumMotions];
     for (int i=0; i<this->getNumMotions(); i++) {
-        mBvh[i].load(this->mMGraph.getMotion(i)->getFilePath());
-        mBvh[i].setLoop(true);
-        mBvh[i].play();
+        mBvh[i].load(this->mMGraph->getMotion(i)->getFilePath());
+        //mBvh[i].setLoop(true);
+        //mBvh[i].play();
     }
 
     mViewer = &mBvh[mCurrentMotion.mMotionIndex];
-}
-
-void MotionGraphPlayer::update()
-{
-    if(this->isPlaying()) {
-        mBvh[mCurrentMotion.mMotionIndex].update();
-        mCurrentMotion.mFrame = mBvh[mCurrentMotion.mMotionIndex].getFrame();
-        if(this->hasBranch() && mMoving == false){
-            this->moveBranchMotion();
-        }
-    }
-    
-    if (mMoving) {
-        this->mixValue = this->mixMotions(mCurrentMotion, mNextMotion);
-        mMovingTime++;
-        
-        if(mOffsetFrame <= mMovingTime) {
-            mCurrentMotion.mMotionIndex = mNextMotion.mMotionIndex;
-            mCurrentMotion.mFrame = mNextMotion.mFrame;
-            mMovingTime = 0;
-            mMoving = false;
-            this->mixValue = 1.0f;
-        }
-    }
 }
 
 void MotionGraphPlayer::play()
@@ -85,6 +63,36 @@ void MotionGraphPlayer::stop()
     mPlaying = false;
 }
 
+void MotionGraphPlayer::update()
+{
+    if(this->isPlaying()) {
+        mBvh[mCurrentMotion.mMotionIndex].update();
+        mCurrentMotion.mFrame = mBvh[mCurrentMotion.mMotionIndex].getFrame();
+        
+        // for bug
+        if(mCurrentMotion.mFrame == 0)
+            mBvh[mCurrentMotion.mMotionIndex].setFrame(mCurrentMotion.mFrame);
+        
+        // confirm whether current frame has transition edge
+        if(this->hasBranch() && mMoving == false && this->mMoving == 0){
+            this->mMoving = this->moveBranchMotion();
+        }
+    }
+    
+    if (mMoving) {
+        this->mMixValue = this->setFrameMotionBlend(mCurrentMotion, mNextMotion);
+        mMovingTime++;
+        
+        if(mOffsetFrame <= mMovingTime) {
+            mPrevMotion = mCurrentMotion;
+            mCurrentMotion = mNextMotion;
+            mMovingTime = 0;
+            mMoving = false;
+            mMixValue = 1.0f;
+        }
+    }
+}
+
 void MotionGraphPlayer::draw()
 {
     mViewer = &mBvh[mCurrentMotion.mMotionIndex];
@@ -92,18 +100,38 @@ void MotionGraphPlayer::draw()
     ofMatrix4x4 mat;
     ofPushMatrix();
     glMultMatrixf(mat.getPtr());
-    mViewer->drawMixMotion(&mBvh[mNextMotion.mMotionIndex], this->mixValue);
+    mViewer->drawMixMotion(&mBvh[mNextMotion.mMotionIndex], this->mMixValue,
+                           mCurrentMotion.quat, mCurrentMotion.trans,
+                           mNextMotion.quat, mNextMotion.trans  );
+        
     ofPopMatrix();
 }
 
 void MotionGraphPlayer::drawGraph(const float& wScale, const float& hScale)
 {
-    this->mMGraph.draw(wScale, hScale);
+    this->mMGraph->draw(wScale, hScale);
+}
+
+void MotionGraphPlayer::resetPosition()
+{
+    this->mTrackPoseMatrix.makeIdentityMatrix();
+    
+    mCurrentMotion.quat = mTrackPoseMatrix.getRotate();
+    mCurrentMotion.trans = mTrackPoseMatrix.getTranslation();
+    mNextMotion.quat = mTrackPoseMatrix.getRotate();
+    mNextMotion.trans = mTrackPoseMatrix.getTranslation();
 }
 
 const bool MotionGraphPlayer::isPlaying() const
 {
     return this->mPlaying;
+}
+
+const bool MotionGraphPlayer::setLoop(bool flag) const
+{
+    for (int i=0; i<this->getNumMotions(); i++) {
+        mBvh[i].setLoop(flag);
+    }
 }
 
 const int MotionGraphPlayer::getNumMotions() const
@@ -118,61 +146,100 @@ const int MotionGraphPlayer::getCurrentMotionIndex() const
 
 void MotionGraphPlayer::selectMotion(const int index)
 {
-    if(index < this->mMGraph.getNumMotion()){
-        mCurrentMotion.mMotionIndex = index;
+    if(index < this->mMGraph->getNumMotion()){
+        
+        mNextMotion.mMotionIndex = index;
+        mNextMotion.mFrame = 0;
+        
+        mBvh[mNextMotion.mMotionIndex].setFrame(mNextMotion.mFrame);
+        
+        
+        
+        
+        this->mMoving = true;
+        
+//        mCurrentMotion.mMotionIndex = index;
+//        mCurrentMotion.mFrame = 0;
+//        
+//        mBvh[mCurrentMotion.mMotionIndex].setFrame(mCurrentMotion.mFrame);
+        
         cout << "motion index : " << index << endl;
     }else{
-        cout << "max num of motion is " << this->mMGraph.getNumMotion() << endl;
+        cout << "max num of motion is " << this->mMGraph->getNumMotion() << endl;
     }
 }
 
 const bool MotionGraphPlayer::hasBranch() const
 {
-    if(this->mMGraph.getGraph()->hasBranch(mCurrentMotion.mMotionIndex, mCurrentMotion.mFrame)){
+    if(this->mMGraph->getGraph()->hasBranch(mCurrentMotion.mMotionIndex, mCurrentMotion.mFrame)){
         return true;
     }else{
         return false;
     }
 }
 
-void MotionGraphPlayer::moveBranchMotion()
+const bool MotionGraphPlayer::moveBranchMotion()
 {
-    int nodeIndex = this->mMGraph.getGraph()->getNodeindex(mCurrentMotion.mMotionIndex, mCurrentMotion.mFrame);
-    int numEdge = this->mMGraph.getGraph()->getNode(nodeIndex)->getNumEdges();
+    int nodeIndex = this->mMGraph->getGraph()->getNodeindex(mCurrentMotion.mMotionIndex, mCurrentMotion.mFrame);
+    int numEdge = this->mMGraph->getGraph()->getNode(nodeIndex)->getNumEdges();
     
     if(numEdge > 0) {
-        int index = ofRandom(numEdge);
-
-        mNextMotion.mMotionIndex = this->mMGraph.getGraph()->getNode(nodeIndex)->getEdge(index)->getDestNode()->getMotionID();
-        mNextMotion.mFrame  = this->mMGraph.getGraph()->getNode(nodeIndex)->getEdge(index)->getDestNode()->getFrameID();
         
-        mMoving = true;        
+        // for set random value
+        std::random_device rd;
+        std::mt19937 mt(rd());
+        std::uniform_int_distribution<int> dice(0, numEdge-1);
+        int index = dice(mt);
+        
+        int nextMotionID = this->mMGraph->getGraph()->getNode(nodeIndex)->getEdge(index)->getDestNode()->getMotionID();
+        int nextMotionFrame = this->mMGraph->getGraph()->getNode(nodeIndex)->getEdge(index)->getDestNode()->getFrameID();
+        
+        if(mCurrentMotion.mMotionIndex != nextMotionID && mPrevMotion.mFrame != nextMotionFrame){
+            
+            mNextMotion.mMotionIndex = this->mMGraph->getGraph()->getNode(nodeIndex)->getEdge(index)->getDestNode()->getMotionID();
+            mNextMotion.mFrame  = this->mMGraph->getGraph()->getNode(nodeIndex)->getEdge(index)->getDestNode()->getFrameID();
+        
+            // set frame
+            this->mBvh[mNextMotion.mMotionIndex].setFrame(mNextMotion.mFrame);
+            
+            // set tracking current pose matrix
+            mCurrentMotion.quat = mTrackPoseMatrix.getRotate();
+            mCurrentMotion.trans = mTrackPoseMatrix.getTranslation();
+            
+            // calculate tracking matrix from previous motion's last pose
+            mTrackPoseMatrix = ofxDigitalDanceBvh::calcTrackPoseMatrix(mBvh[mCurrentMotion.mMotionIndex],
+                                                                       mBvh[mNextMotion.mMotionIndex],
+                                                                       mTrackPoseMatrix);
+            // set tracking next pose matrix
+            mNextMotion.quat = mTrackPoseMatrix.getRotate();
+            mNextMotion.trans = mTrackPoseMatrix.getTranslation();
+
+            return true;
+        }
+        else{
+            return false;    // if same motion, still continue next frame
+        }
     }
 }
 
-const float MotionGraphPlayer::mixMotions(const MotionInfo& current, MotionInfo& next)
+const float MotionGraphPlayer::setFrameMotionBlend(const MotionInfo& current, MotionInfo& next)
 {
     // current update
     this->mBvh[current.mMotionIndex].setFrame(current.mFrame);
-    this->mBvh[current.mMotionIndex].update();
     
     // next update
     next.mFrame++;
+    
+    // set frame for next motion
     if(next.mFrame - mOffsetFrame > 0)
         this->mBvh[next.mMotionIndex].setFrame(next.mFrame - mOffsetFrame);
     else
-        mNextMotion.mFrame = 0;
-
-    this->mBvh[next.mMotionIndex].update();
+        this->mBvh[next.mMotionIndex].setFrame(0);
+        //mNextMotion.mFrame = 0;
     
-    // interpolate
-    return calcInterpolateValue(mMovingTime, mOffsetFrame);
+    // next animation start playing
+    this->mBvh[next.mMotionIndex].play();
+    
+    // return interpolate value (-1 <= mMovingTIme < mOffsetFrame)
+    return ofxDigitalDanceBvh::calcInterpolateValue(mMovingTime, mOffsetFrame);
 }
-
-const float MotionGraphPlayer::calcInterpolateValue(const int p, const int k)
-{
-    assert(-1 < p && p < k);
-
-    return 2 * pow(((float)p+1)/(float)k, 3) - 3 * pow(((float)p+1)/(float)k, 2) + 1;
-}
-
