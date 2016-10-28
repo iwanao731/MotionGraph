@@ -202,7 +202,6 @@ const int Map::calcMinimums(const int level, std::vector<int>& m1, std::vector<i
     std::string s1 = this->getRelations(level, 0);
     std::string s2 = this->getRelations(level, 1);
     
-#if 1
     bool **transPoint;
     transPoint = new bool *[np1];
     for(int i=0; i<np1; i++){
@@ -234,30 +233,6 @@ const int Map::calcMinimums(const int level, std::vector<int>& m1, std::vector<i
     }
 
     this->saveImage(transPoint, this->mDifferenceMap[level], this->mMotions.at(index1), this->mMotions.at(index2));
-    
-#else
-    for(int i = 0 ; i < np1 - this->mNSteps ; i++) {
-        for(int j = this->mNSteps ; j < np2 ; j++) {
-            if(this->mDifferenceMap[level][i][j] < this->mThreshold) {
-                if((i + this->mNSteps) < np1 && (j + this->mNSteps) < np2) {
-                    //(np1 - i) >= this->nSteps && (np2 - j) >= this->nSteps ){
-                    bool ok = true;
-                    for(int l = 0 ; l < this->mNSteps && ok ; l++){
-                        if(this->mDifferenceMap[level][i+l][j+l] >= this->mThreshold)
-                            ok = false;
-                    }
-                    
-                    if(ok){
-                        m1.push_back(i);
-                        m2.push_back(j+this->mNSteps);
-                        nPts++;
-                    }
-                }
-            }
-        }
-    }
-    
-#endif
     
     cout << "correspondence point : " << m1.size() << "," << m2.size() << endl;
     
