@@ -14,14 +14,11 @@ Graph::Graph()
 {
     this->mIndices = NULL;
     this->mNNodes = 0;
-    this->mCurrentMotionIndex = 0;
-    this->mCurrentFrame = 0;
 }
 
 Graph::~Graph()
 {
-    mNodes.clear();
-    mMapLabelIndex.clear();
+    
 }
 
 const int Graph::getNumNodes() const
@@ -31,19 +28,15 @@ const int Graph::getNumNodes() const
 
 Node* Graph::getNode(const int node)
 {
-    if(node >= this->mNNodes || node < 0){
-        std::cerr << "can't find the node index : " << node << "/" << this->mNNodes << std::endl;
-        assert(node < this->mNNodes && node >= 0);
-    }
-    else
-        return this->mNodes.at(node);
+    if(node >= this->mNNodes || node < 0) return NULL;
+    else return this->mNodes.at(node);
 }
 
 const bool Graph::hasBranch(const int motionIndex, const int frameId)
 {
-    this->mCurrentMotionIndex = motionIndex;
-    this->mCurrentFrame = frameId;
-    if(this->mIndices[motionIndex][frameId] > 0)    // (TBD) sometimes had been permited return the number such as 2910892
+    mCurrentMotionIndex = motionIndex;
+    mCurrentFrame = frameId;
+    if(this->mIndices[motionIndex][frameId] > 0)
         return true;
     else
         return false;
@@ -121,10 +114,8 @@ void Graph::loadGraph(const std::string& filename)
     
     std::ifstream inFile;
     inFile.open(label, std::ios_base::in);
-    if(!inFile){
-        cout << "counldn't find : " << label << endl;
+    if(!inFile)
         return false;
-    }
     
     const int MAX_LINE_CHAR = 512;
     char szLine[MAX_LINE_CHAR] = "";
@@ -166,24 +157,27 @@ void Graph::loadGraph(const std::string& filename)
         if( 0 == strcmp("MotionNum", tokens[0]) )
         {
             int motionNum = std::atoi(tokens[1]);
-            cout << "motionNum : " << motionNum << endl;
             this->mIndices = new int *[motionNum];
+            cout << "MotionNum " << motionNum << endl;
         }
-        else if ( 0 == strcmp("MotionLabel", tokens[0]) )
+        else if( 0 == strcmp("MotionPath", tokens[0]) )
         {
+            string motionPath = tokens[1];
             int motionIndex = this->mMapLabelIndex.size();
-            string motionLabel = tokens[1];
-            this->mMapLabelIndex.insert( map<std::string, int>::value_type( motionLabel, motionIndex ) );
             
-            cout << "motion label : " << motionLabel << endl;
-
-            if ( 0 == strcmp("frameNum", tokens[2]) )
+            if ( 0 == strcmp("MotionLabel", tokens[2]) )
             {
-                int numFrame = std::atoi(tokens[3]);
+                string motionLabel = tokens[3];
+                this->mMapLabelIndex.insert( map<std::string, int>::value_type( motionLabel, motionIndex ) );
+            }
+            
+            if ( 0 == strcmp("frameNum", tokens[4]) )
+            {
+                int numFrame = std::atoi(tokens[5]);
                 this->mIndices[motionIndex] = new int [numFrame];
                 
                 // initialization
-                for(int i=0; i<numFrame; i++) {
+                for(int i=0; i<this->mMapLabelIndex.size(); i++) {
                     this->mIndices[motionIndex][i] = -1;
                 }
             }
@@ -194,11 +188,10 @@ void Graph::loadGraph(const std::string& filename)
             if( 0 == strcmp("frame", tokens[2]) )
             {
                 int frame = std::atoi(tokens[3]);
-                auto index = mMapLabelIndex.find(motionName);
                 Node *n = new Node;
                 n->setFrameID(frame);
-                n->setMotionID(index->second);
                 n->setMotionLabel(motionName);
+                auto index = mMapLabelIndex.find(motionName);
                 this->mIndices[index->second][frame] = this->addNode(n);
             }
         }
@@ -223,13 +216,19 @@ void Graph::loadGraph(const std::string& filename)
 void Graph::exportGraphFile(const string& filename, const std::vector<Motion>& motion)
 {
     std::cout << "export graph file: " << endl;
+    std::stringstream ss;
+    ss << filename;
     
-    std::ofstream ofs(filename);
+    // using openFrameworks utility function
+    ofFile file;
+    std::string label = file.getAbsolutePath() + "/" + ss.str();
+    
+    std::ofstream ofs(label);
     if(!ofs) {
         std::cerr << "Failed open file" << std::endl;
         std::exit(1);
     }else{
-        cout << "export... " << filename << endl;
+        cout << "export... " << ss.str() << endl;
     }
 
     int motionNum = motion.size();
@@ -239,7 +238,8 @@ void Graph::exportGraphFile(const string& filename, const std::vector<Motion>& m
     ofs << "MotionNum " << motionNum << endl;
     
     for(int i=0; i<motionNum; i++) {
-        ofs <<  "MotionLabel "  << motion[i].getLabel()     << " " <<
+        ofs <<  "MotionPath "   << motion[i].getFilePath()  << " " <<
+                "MotionLabel "  << motion[i].getLabel()     << " " <<
                 "frameNum "     << motion[i].getNFrames()   << std::endl;
     }
 
@@ -260,7 +260,10 @@ void Graph::exportGraphFile(const string& filename, const std::vector<Motion>& m
 
 void Graph::draw(const float& wScale, const float& hScale)
 {
+    ofSetColor(50);
+    
     ofVec2f offset(10,10);
+    ofSetColor(0);
     int count = 0;
     for(int i=0; i<this->getNumNodes(); i++) {
         

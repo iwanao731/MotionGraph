@@ -13,13 +13,11 @@ using namespace Euclid;
 MotionGraph::MotionGraph()
 {
     mAnimCount = 0;
-    
-    this->mGraph = new Graph;
 }
 
 MotionGraph::~MotionGraph()
 {
-    delete mGraph;
+    
 }
 
 void MotionGraph::addMotion(const Motion& motion)
@@ -34,7 +32,9 @@ void MotionGraph::constructGraph(const Threshold& threshold, const NCoincidents&
     
     if(mAnimCount == 0) return;
         
+    this->mGraph = new Graph();
     this->mGraph->constructGraph(this->mMotions, this->mAnimCount, threshold.getValue(), nCoincidents.getValue());
+    //this->mGraph = this->prune();
 
     std::cout << "end construct graph" << std::endl;
 }
@@ -44,58 +44,18 @@ void MotionGraph::draw(const float& wScale, const float& hScale)
     this->mGraph->draw(wScale, hScale);
 }
 
-void MotionGraph::clear()
+bool MotionGraph::LoadGraph(const std::string& filename)
 {
-    this->mMotions.clear();
-}
-
-bool MotionGraph::loadGraph(const std::string& filename)
-{
-    // load graph file
     this->mGraph->loadGraph(filename);
-}
-
-bool MotionGraph::loadMotionList(const std::string& motionList)
-{
-    std::cout << "Load Motion List : " << motionList << std::endl;
-    
-    ofFile file;
-    std::string path = file.getAbsolutePath() + "/" + motionList;
-    
-    std::ifstream inFile;
-    inFile.open(path, std::ios_base::in);
-    if(!inFile)
-        return false;
-    
-    const int MAX_LINE_CHAR = 512;
-    char szLine[MAX_LINE_CHAR] = "";
-    inFile.getline(szLine, MAX_LINE_CHAR);
-
-    // initialization for this->mMotion
-    int numMotion = std::atoi(szLine);
-    this->mMotions.resize(numMotion);
-
-    for(int i=0; i<numMotion; i++){
-        inFile.getline(szLine, MAX_LINE_CHAR);
-        this->mMotions[i].setFilePath(szLine);
-        //std::cout << "motion path: " << this->mMotions[i].getFilePath() << std::endl;
-    }    
 }
 
 void MotionGraph::exportGraph(const std::string& filename)
 {
-    // export Motion information
-    ofFile file;
-    std::string path = file.getAbsolutePath() + "/" + filename;
-    std::ofstream ofs(path + "_motionlist.txt");
-    ofs << this->mMotions.size() << endl;
+    std::vector<std::string> motion_filepaths;
     for(int i=0; i<this->mMotions.size(); i++){
-        ofs << this->mMotions.at(i).getFilePath() << std::endl;
+        motion_filepaths.push_back(this->mMotions.at(i).getFilePath());
     }
-    ofs.close();
-    
-    // export Graph information
-    this->mGraph->exportGraphFile(path+"_graph.txt", this->mMotions);
+    this->mGraph->exportGraphFile(filename, this->mMotions);
 }
 
 bool MotionGraph::isExistMotion(const int index) const

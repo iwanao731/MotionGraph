@@ -31,6 +31,6 @@ class ofApp : public ofBaseApp{
         MotionGraph mMotionGraph;
         MotionGraphPlayer mMGPlayer;
         SecondaryMotionGraph SMG;
-        bool bGraphDraw;
+    
         void loadMotion(const string& filepath, Motion &motion);
 };
