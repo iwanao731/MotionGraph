@@ -26,7 +26,7 @@ public:
 
     void loadGraph(const std::string& filename);
     void constructeGraph(int motionIndex, int frameIndex);
-    void drawTree();
+    void drawTree(float scaleX, float scaleY);
 
     const int getNumSMGNodes() const;
 
@@ -49,10 +49,7 @@ private:
     
     /// Breath First Search
     void BFS(Euclid::Node *n);
-    
-    /// 
-    void removeDeadEnd();
-    
+    void removeDeadEnd();    
 };
 
 #endif /* defined(____Secondary__Motion__Graph____) */

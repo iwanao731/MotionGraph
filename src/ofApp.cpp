@@ -16,15 +16,15 @@ void ofApp::setup(){
     // Load Motion Dataset
     ofDirectory dir;
     dir.listDir("CMU");
-
 //    dir.listDir("Male1");
+    
     for(int i=0; i<dir.size(); i++){
         Motion motion;
         loadMotion(dir.getPath(i), motion);
         mMotionGraph.addMotion(motion);
     }
 
-    mMotionGraph.constructGraph(Threshold(500.f), NCoincidents(5));
+    mMotionGraph.constructGraph(Threshold(3500.f), NCoincidents(5));    // 500, 5 is easy for DEBUG
     mMotionGraph.exportGraph("sample");
     mMotionGraph.clear();
 #endif
@@ -84,16 +84,13 @@ void ofApp::draw(){
     ofDrawBitmapString("start / stop (space) : " + ofToString(mMGPlayer.isPlaying() == true ? "playing" : "stop"), ofGetWidth()-300, 140);
 #endif
     
-    SMG.drawTree();
+    SMG.drawTree(ofGetMouseX()/100.f, ofGetMouseY()/100.f);
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
- #ifdef MGPLAY
     switch (key) {
-        case 'f':
-            ofToggleFullscreen();
-            break;
+#ifdef MGPLAY
         case 'r':
             mMGPlayer.resetPosition();
             break;
@@ -128,10 +125,13 @@ void ofApp::keyPressed(int key){
             mMGPlayer.play();
             break;
         }
+#endif
+        case 'f':
+            ofToggleFullscreen();
+            break;
         default:
             break;
     }
-#endif
 }
 
 //--------------------------------------------------------------

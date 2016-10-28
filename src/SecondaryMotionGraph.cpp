@@ -30,25 +30,6 @@ void SMG::loadGraph(const std::string& filename)
     mMGNodes.resize(this->Graph::getNumNodes());
 }
 
-void SMG::drawTree()
-{
-    ofPushMatrix();
-    
-    ofDrawCircle(0, 0, 0);
-    
-    for(auto m : mSMGNodes){
-        ofPoint p(0,0,0);
-        m->setPosition(p);
-        cout << m->getNodeIndex() << " : ";
-        for(int i=0; i<m->getNumChildren(); i++){
-            cout << m->getChild(i)->getNodeIndex() << ",";
-        }
-        cout << endl;
-    }
-    
-    ofPopMatrix();
-}
-
 const int SMG::getNumSMGNodes() const
 {
     return this->mSMGNodes.size();
@@ -65,10 +46,9 @@ void SMG::constructeGraph(int motionIndex, int frameIndex)
     
     // expand for each dead node
 //    for(int k=0; k<5; k++){
-        cout << "error :  " << this->expansion() << endl;
+//        cout << "error :  " << this->expansion() << endl;
 //    }
     
-    //
     this->merge();
     
     std::cout << "end Construct Graph" << std::endl;
@@ -82,7 +62,7 @@ void SMG::initialization(int nodeIndex)
     this->BFS(startNode);
     
     // Dead End Node make connecting to another node as Ghost Node considering to the connection of motion graph
-    this->removeDeadEnd();  //Actually we have to choose next state of the most minimum simulation error
+    //this->removeDeadEnd();  //Actually we have to choose next state of the most minimum simulation error
 }
 
 float SMG::expansion()
@@ -110,7 +90,100 @@ void SMG::merge()
 {
     std::cout << "starting merge ..." << std::endl;
     
+    for (auto m : this->mSMGNodes){
+        cout << m->getMGNode()->getNodeID() << " : " << m->getNumChildren() << " -> ";
+        for(int i=0; i<m->getNumChildren(); i++){
+            cout << m->getChild(i)->getMGNode()->getNodeID() << ",";
+        }
+        cout << endl;
+    }
+    
     std::cout << "end merge ..." << std::endl;
+}
+
+ofVec3f calcBranchPos(int index, int numChild, float length, float depth)
+{
+    ofVec3f pos(0);
+    float scale = 100;
+    float ratio = 7.0f;
+    float value = pow(1+scale, -depth/ratio) * scale;
+    
+    pos.y = length;
+    if (numChild == 1) {
+        pos.x = 0;
+    }else if(numChild == 2){
+        if(index == 0)
+            pos.x = -value;
+        else
+            pos.x = value;
+    }else{
+        if (index == 0) {
+            pos.x = -value;
+        }else if(index == 1){
+            pos.x = 0;
+        }else{
+            pos.x = value;
+        }
+    }
+    return pos;
+}
+
+void SMG::drawTree(float scaleX, float scaleY)
+{
+    ofSetColor(50);
+    
+    std::vector<bool> visited(this->getNumSMGNodes());
+    std::fill(visited.begin(), visited.end(), false);
+    
+    ofTranslate(ofGetWidth()/2, 20);
+    ofPushMatrix();
+    
+    SMGNode *root = this->mSMGNodes[0];
+    
+    list<SMGNode*> nodeQueue;
+    list<int> depthQueue;
+    list<ofVec3f> posQueue;
+    
+    nodeQueue.push_back(root);
+    depthQueue.push_back(0);
+    posQueue.push_back(ofVec3f(0));
+    visited[root->getNodeIndex()] = true;
+    
+    ofDrawCircle(0, 0, 5);
+    
+    while (!nodeQueue.empty()) {
+        
+        SMGNode *n = nodeQueue.front();
+        int depth = depthQueue.front();
+        int numChild = n->getNumChildren();
+        ofVec3f pos = n->getPosition();
+        
+        nodeQueue.pop_front();
+        depthQueue.pop_front();
+        
+        for(int j=0; j<numChild; j++) {
+            int nextID = n->getChild(j)->getNodeIndex();
+            if(!visited[nextID]) {
+                
+                visited[nextID] = true;
+                nodeQueue.push_back(n->getChild(j));
+                depthQueue.push_back(depth+1);
+                
+                ofVec3f childPos = pos + calcBranchPos(j, numChild, 40, depth+1);
+                nodeQueue.back()->setPosition(childPos);
+                ofDrawLine(pos.x * scaleX, pos.y * scaleY, childPos.x * scaleX, childPos.y * scaleY);
+                
+                if(this->mSMGNodes[nextID]->getNumChildren() == 0)
+                    ofSetColor(255, 0, 0);
+                else{
+                    ofSetColor(50);
+                }
+                ofDrawCircle(childPos.x * scaleX, childPos.y * scaleY, 5.0f/(float)(depth+1));
+                ofSetColor(50);
+            }
+        }
+    }
+    ofPopMatrix();
 }
 
 int SMG::addSMGNode(Euclid::Node *n)
@@ -264,5 +337,3 @@ void SMG::addEdgeQueue(SMGNode* node1, SMGNode *node2)
     
     this->mEdgeQueue.push_back(edge);
 }
-
-
