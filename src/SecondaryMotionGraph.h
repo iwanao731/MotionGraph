@@ -11,6 +11,8 @@
 
 #include <stdio.h>
 #include <list>
+#include <limits> // for rand function
+#include <random>
 #include "Eigen/Sparse"
 #include "MotionGraph.h"
 #include "SMGNode.h"
@@ -22,10 +24,10 @@ public:
     SecondaryMotionGraph();
     virtual ~SecondaryMotionGraph();
 
-    void loadGraph(const string& filename);
-    void constructeGraph(const int motionIndex, const int frameIndex);
+    void loadGraph(std::string& filename);
+    void constructeGraph(int motionIndex, int frameIndex);
 
-    int getNumSMGNodes();
+    const int getNumSMGNodes() const;
 
 private:
     

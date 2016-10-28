@@ -13,12 +13,13 @@ using namespace Euclid;
 MotionGraph::MotionGraph()
 {
     mAnimCount = 0;
-    this->mGraph = new Graph();
+    
+    this->mGraph = new Graph;
 }
 
 MotionGraph::~MotionGraph()
 {
-    
+    delete mGraph;
 }
 
 void MotionGraph::addMotion(const Motion& motion)
@@ -33,9 +34,7 @@ void MotionGraph::constructGraph(const Threshold& threshold, const NCoincidents&
     
     if(mAnimCount == 0) return;
         
-    //this->mGraph = new Graph();
     this->mGraph->constructGraph(this->mMotions, this->mAnimCount, threshold.getValue(), nCoincidents.getValue());
-    //this->mGraph = this->prune();
 
     std::cout << "end construct graph" << std::endl;
 }
@@ -43,6 +42,11 @@ void MotionGraph::constructGraph(const Threshold& threshold, const NCoincidents&
 void MotionGraph::draw(const float& wScale, const float& hScale)
 {
     this->mGraph->draw(wScale, hScale);
+}
+
+void MotionGraph::clear()
+{
+    this->mMotions.clear();
 }
 
 bool MotionGraph::loadGraph(const std::string& filename)

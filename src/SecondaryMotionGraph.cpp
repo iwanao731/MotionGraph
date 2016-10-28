@@ -20,7 +20,7 @@ SMG::~SecondaryMotionGraph()
     
 }
 
-void SMG::loadGraph(const string& filename)
+void SMG::loadGraph(std::string& filename)
 {
     this->Euclid::Graph::loadGraph(filename);
     
@@ -28,12 +28,12 @@ void SMG::loadGraph(const string& filename)
     mMGNodes.resize(this->Graph::getNumNodes());
 }
 
-int SMG::getNumSMGNodes()
+const int SMG::getNumSMGNodes() const
 {
     return this->mSMGNodes.size();
 }
 
-void SMG::constructeGraph(const int motionIndex, const int frameIndex)
+void SMG::constructeGraph(int motionIndex, int frameIndex)
 {
     std::cout << "start Construct Graph" << std::endl;
     
@@ -224,6 +224,11 @@ void SMG::removeDeadEnd()
     cout << "end removeDeadEnd" << endl;
 }
 
+// for calculate random value from 0 to max.
+int randomError(int max) {
+    return (max * rand() / float(RAND_MAX)) * (1.0f - std::numeric_limits<float>::epsilon());
+}
+
 // (TBD) necessary to consider simulation error
 void SMG::addEdgeQueue(SMGNode* node1, SMGNode *node2)
 {
@@ -231,7 +236,8 @@ void SMG::addEdgeQueue(SMGNode* node1, SMGNode *node2)
     edge = new SMGEdge;
     edge->setStartNode(node1);
     edge->setDestNode(node2);
-    edge->setError(ofRandom(100));   // oF function temporary <- should be put simulation error here;
+
+    edge->setError(randomError(100)); //  <- (TBD) should be put simulation error here;
     this->mEdgeQueue.push_back(edge);
 }
 
