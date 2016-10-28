@@ -19,9 +19,9 @@ public:
     SMGNode();
     virtual ~SMGNode();
     
-    bool hasParent();
-    bool hasChildren();
-    bool IsGhostNode();
+    const bool hasParent() const;
+    const bool hasChildren() const;
+    const bool IsGhostNode() const;
     
     void addChild(SMGNode *childNode);
 
@@ -30,18 +30,17 @@ public:
     void setParent(SMGNode *parentNode);
     void setGhostNode(bool bValue);
     
-    int getNodeIndex();
-    int getNumChildren();
-    SMGNode* getParent();
-    SMGNode* getChild(int index);
-    Euclid::Node* getMGNode();
+    const int getNodeIndex() const;
+    const int getNumChildren() const;
+    SMGNode* getParent() const;
+    SMGNode* getChild(int index) const;
+    Euclid::Node* getMGNode() const;
     
 private:
     bool mHasParent;
     bool mHasChild;
-    bool mGhostNode;
+    bool mIsGhostNode;
     int mIndex;
-    int mNumChildren;
     Euclid::Node *mNode;
     SMGNode *mParentNode;
     std::vector<SMGNode*> mChildren;

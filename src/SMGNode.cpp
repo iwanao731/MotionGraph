@@ -12,9 +12,8 @@ SMGNode::SMGNode()
 {
     this->mHasParent = false;
     this->mHasChild = false;
-    this->mGhostNode = false;
+    this->mIsGhostNode = false;
     this->mIndex = -1;
-    this->mNumChildren = 0;
 }
 
 SMGNode::~SMGNode()
@@ -22,19 +21,19 @@ SMGNode::~SMGNode()
     
 }
 
-bool SMGNode::hasParent()
+const bool SMGNode::hasParent() const
 {
     return this->mHasParent;
 }
 
-bool SMGNode::hasChildren()
+const bool SMGNode::hasChildren() const
 {
     return this->mHasChild;
 }
 
-bool SMGNode::IsGhostNode()
+const bool SMGNode::IsGhostNode() const
 {
-    return this->mGhostNode;
+    return this->mIsGhostNode;
 }
 
 void SMGNode::setNodeIndex(int index)
@@ -55,39 +54,38 @@ void SMGNode::setParent(SMGNode *parentNode)
 
 void SMGNode::setGhostNode(bool bValue)
 {
-    this->mGhostNode = bValue;
+    this->mIsGhostNode = bValue;
 }
 
 void SMGNode::addChild(SMGNode *childNode)
 {
     this->mHasChild = true;
     this->mChildren.push_back(childNode);
-    mNumChildren++;
 }
 
-int SMGNode::getNodeIndex()
+const int SMGNode::getNodeIndex() const
 {
     return this->mIndex;
 }
 
-SMGNode* SMGNode::getParent()
+const int SMGNode::getNumChildren() const
+{
+    return this->mChildren.size();
+}
+
+SMGNode* SMGNode::getParent() const
 {
     return this->mParentNode;
 }
 
-int SMGNode::getNumChildren()
-{
-    return this->mNumChildren;
-}
-
-Euclid::Node* SMGNode::getMGNode()
+Euclid::Node* SMGNode::getMGNode() const
 {
     return this->mNode;
 }
 
-SMGNode* SMGNode::getChild(int index)
+SMGNode* SMGNode::getChild(int index) const
 {
-    if(index < mNumChildren)
+    if(0 <= index && index < this->mChildren.size())
         return this->mChildren[index];
     else
         return NULL;

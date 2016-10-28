@@ -41,6 +41,7 @@ namespace Euclid
         void exportGraph(const std::string& filename);
         void constructGraph(const Threshold& threshold, const NCoincidents& nCoincidents);
         void draw(const float& wScale, const float& hScale); // draw MotionGraph structure on 2D
+        void clear();
         
     private:
         int mAnimCount;
