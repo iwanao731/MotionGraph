@@ -2,44 +2,60 @@
 #include "Motion.h"
 #include "BVHConverter.h"
 
+#define BUILD_GRAPH
+#define MGPLAY
 //--------------------------------------------------------------
 void ofApp::setup(){
     
+    ofBackground(150);
     ofSetFrameRate(60.f);
-    
     mMotionIndex = 0;
+    bGraphDraw = true;
     
+#ifdef BUILD_GRAPH
     // Load Motion Dataset
     ofDirectory dir;
     dir.listDir("CMU");
+//    dir.listDir("Male1");
+    
     for(int i=0; i<dir.size(); i++){
         Motion motion;
         loadMotion(dir.getPath(i), motion);
         mMotionGraph.addMotion(motion);
     }
-    
-    mMotionGraph.constructGraph(Threshold(500.f), NCoincidents(5));
-    mMotionGraph.exportGraph("graph.txt");
-    
-    //mMotionGraph.LoadGraph("graph.txt");
-    // motion_graph.saveImage("file.png");
-    //mgPlayer.load("graph.txt");
-    
-    mMGPlayer.set(mMotionGraph);
+
+    mMotionGraph.constructGraph(Threshold(1500.f), NCoincidents(5));    // 500, 5 is easy for DEBUG
+    mMotionGraph.exportGraph("sample");
+    mMotionGraph.clear();
+#endif
+
+#ifdef MGPLAY
+    // load graph and motion
+    mMGPlayer.load("sample");
+    mMGPlayer.setLoop(false);
     mMGPlayer.play();
+#endif
     
-    SMG.Euclid::Graph::loadGraph("graph.txt");
+    // secondary motion graph
+    SMG.loadGraph("sample_graph.txt");
     SMG.constructeGraph(0, 0);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+#ifdef MGPLAY
     mMGPlayer.update();
+#endif
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    mMotionGraph.draw(ofGetMouseX()/100.f, ofGetMouseY());
+
+#ifdef MGPLAY
+    if(bGraphDraw) {
+        ofSetColor(255);
+        mMGPlayer.drawGraph(ofGetMouseX()/100.f, ofGetMouseY());
+    }
     
     ofEnableDepthTest();
     ofEnableLighting();
@@ -49,6 +65,9 @@ void ofApp::draw(){
     ofSetColor(255);
     mCam.begin();
     
+    // floor
+    ofDrawGrid(100, 20, false, false, true, false);
+
     mMGPlayer.draw();
     
     mCam.end();
@@ -57,14 +76,23 @@ void ofApp::draw(){
     ofDisableDepthTest();
     
     ofSetColor(0);
-    ofDrawBitmapString("motion number : " + ofToString(mMGPlayer.getCurrentMotionIndex()), ofGetWidth()-200, ofGetHeight()-40);
+    ofDrawBitmapString("motion number : " + ofToString(mMGPlayer.getCurrentMotionIndex()), ofGetWidth()-300, 40);
+    ofDrawBitmapString("graph previwer (g) : " + ofToString(bGraphDraw == true ? "true" : "false"), ofGetWidth()-300, 60);
+    ofDrawBitmapString("full screen (f)", ofGetWidth()-300, 80);
+    ofDrawBitmapString("reset position (r)", ofGetWidth()-300, 100);
+    ofDrawBitmapString("change motion (key <- or ->) ", ofGetWidth()-300, 120);
+    ofDrawBitmapString("start / stop (space) : " + ofToString(mMGPlayer.isPlaying() == true ? "playing" : "stop"), ofGetWidth()-300, 140);
+#endif
+    
+    SMG.drawTree(ofGetMouseX()/100.f, ofGetMouseY()/100.f);
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     switch (key) {
-        case 'f':
-            ofToggleFullscreen();
+#ifdef MGPLAY
+        case 'r':
+            mMGPlayer.resetPosition();
             break;
         case ' ':
         {
@@ -74,6 +102,9 @@ void ofApp::keyPressed(int key){
                 mMGPlayer.play();
             break;
         }
+        case 'g':
+            bGraphDraw = !bGraphDraw;
+            break;
         case OF_KEY_LEFT:
         {
             mMotionIndex--;
@@ -94,6 +125,10 @@ void ofApp::keyPressed(int key){
             mMGPlayer.play();
             break;
         }
+#endif
+        case 'f':
+            ofToggleFullscreen();
+            break;
         default:
             break;
     }
