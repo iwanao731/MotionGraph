@@ -156,10 +156,11 @@ void SMG::drawTree(float scaleX, float scaleY)
         SMGNode *n = nodeQueue.front();
         int depth = depthQueue.front();
         int numChild = n->getNumChildren();
-        ofVec3f pos = n->getPosition();
+        ofVec3f pos = posQueue.front();
         
         nodeQueue.pop_front();
         depthQueue.pop_front();
+        posQueue.pop_front();
         
         for(int j=0; j<numChild; j++) {
             int nextID = n->getChild(j)->getNodeIndex();
@@ -170,7 +171,7 @@ void SMG::drawTree(float scaleX, float scaleY)
                 depthQueue.push_back(depth+1);
                 
                 ofVec3f childPos = pos + calcBranchPos(j, numChild, 40, depth+1);
-                nodeQueue.back()->setPosition(childPos);
+                posQueue.push_back(childPos);
                 ofDrawLine(pos.x * scaleX, pos.y * scaleY, childPos.x * scaleX, childPos.y * scaleY);
                 
                 if(this->mSMGNodes[nextID]->getNumChildren() == 0)
