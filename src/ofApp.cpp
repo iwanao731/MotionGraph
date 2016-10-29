@@ -2,8 +2,8 @@
 #include "Motion.h"
 #include "BVHConverter.h"
 
-//#define BUILD_GRAPH
-//#define MGPLAY
+#define BUILD_GRAPH
+#define MGPLAY
 //--------------------------------------------------------------
 void ofApp::setup(){
     
@@ -24,7 +24,7 @@ void ofApp::setup(){
         mMotionGraph.addMotion(motion);
     }
 
-    mMotionGraph.constructGraph(Threshold(3500.f), NCoincidents(5));    // 500, 5 is easy for DEBUG
+    mMotionGraph.constructGraph(Threshold(1500.f), NCoincidents(5));    // 500, 5 is easy for DEBUG
     mMotionGraph.exportGraph("sample");
     mMotionGraph.clear();
 #endif

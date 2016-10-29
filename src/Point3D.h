@@ -1,6 +1,6 @@
 //
 //  Point3D.h
-//  
+//
 //
 //  Created by NAOYAIWAMOTO on 13/10/2016.
 //
@@ -18,14 +18,13 @@ namespace Euclid
     {
     public:
         Point3D();
-        Point3D(const float& x, const float& y, const float& z);
-        Point3D(const int x, const int y, const int z);
+        Point3D(float x, float y, float z);
         ~Point3D();
         
-        void setX(const float& x);
-        void setY(const float& y);
-        void setZ(const float& z);
-        void setWeight(const float& w);
+        void setX(float& x);
+        void setY(float& y);
+        void setZ(float& z);
+        void setWeight(float& w);
         void setPosition(const ofPoint& p);
         
         const float& getX() const;
@@ -34,7 +33,31 @@ namespace Euclid
         const float& getWeight() const;
         const ofPoint& getPosition() const;
         
+        // Future Work
+//        const Point3D& getPosition() const;
+
+//        Point3D  operator+( const Point3D& pnt ) const;
+//        Point3D  operator+( const float f ) const;
+//        Point3D& operator+=( const Point3D& pnt );
+//        Point3D& operator+=( const float f );
+//
+//        Point3D  operator-( const Point3D& pnt ) const;
+//        Point3D  operator-( const float f ) const;
+//        Point3D& operator-=( const Point3D& pnt );
+//        Point3D& operator-=( const float f );
+//
+//        Point3D  operator*( const Point3D& vec ) const;
+//        Point3D  operator*( const float f ) const;
+//        Point3D& operator*=( const Point3D& vec );
+//        Point3D& operator*=( const float f );
+//
+//        Point3D  operator/( const Point3D& vec ) const;
+//        Point3D  operator/( const float f ) const;
+//        Point3D& operator/=( const Point3D& vec );
+//        Point3D& operator/=( const float f );
+        
     private:
+        //float mX, mY, mZ;
         ofPoint mPos;
         float mWeight;
     };
