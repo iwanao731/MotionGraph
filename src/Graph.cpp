@@ -112,7 +112,7 @@ void Graph::constructGraph(const std::vector<Motion>& motions, const int nMotion
     }
 }
 
-void Graph::loadGraph(const std::string& filename)
+bool Graph::loadGraph(const std::string& filename)
 {
     cout << "Load Graph : " << filename << endl;
     
@@ -218,6 +218,7 @@ void Graph::loadGraph(const std::string& filename)
             }
         }
     }
+	return true;
 }
 
 void Graph::exportGraphFile(const string& filename, const std::vector<Motion>& motion)

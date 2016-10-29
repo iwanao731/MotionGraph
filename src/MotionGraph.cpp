@@ -52,7 +52,10 @@ void MotionGraph::clear()
 bool MotionGraph::loadGraph(const std::string& filename)
 {
     // load graph file
-    this->mGraph->loadGraph(filename);
+	if (this->mGraph->loadGraph(filename))
+		return true;
+	else
+		return false;
 }
 
 bool MotionGraph::loadMotionList(const std::string& motionList)

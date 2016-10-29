@@ -49,7 +49,7 @@ void SMG::constructeGraph(int motionIndex, int frameIndex)
 //        cout << "error :  " << this->expansion() << endl;
 //    }
 //    
-//    this->merge();
+    this->merge();
     
     std::cout << "end Construct Graph" << std::endl;
 }
@@ -62,7 +62,7 @@ void SMG::initialization(int nodeIndex)
     this->BFS(startNode);
     
     // Dead End Node make connecting to another node as Ghost Node considering to the connection of motion graph
-    this->removeDeadEnd();  //Actually we have to choose next state of the most minimum simulation error
+    //this->removeDeadEnd();  //Actually we have to choose next state of the most minimum simulation error
 }
 
 float SMG::expansion()
@@ -268,7 +268,7 @@ void SMG::BFS(Euclid::Node *n)
                 //depthQueue.push_back(depth+1);
                 //parentQueue.push_back(n->getNodeID());
                 
-                cout << SMGIndex << "," << n->getEdge(j)->getDestNode()->getNodeID() << endl;
+                //cout << SMGIndex << "," << n->getEdge(j)->getDestNode()->getNodeID() << endl;
                 this->addChildSMGNode(this->mSMGNodes[SMGIndex], n->getEdge(j)->getDestNode());
             }
         }

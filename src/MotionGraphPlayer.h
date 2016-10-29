@@ -43,7 +43,7 @@ public:
     const bool isPlaying() const;
     
     // setter
-    const bool setLoop(bool flag) const;
+    const void setLoop(bool flag) const;
     
     // geter
     const int getNumMotions() const;

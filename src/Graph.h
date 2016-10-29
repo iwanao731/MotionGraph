@@ -34,7 +34,7 @@ namespace Euclid
         const int getNodeindex(const int motionIndex, const int frameId);
 
         void constructGraph(const std::vector<Motion>& motions, const int nMotions, const float& threshold, const int nCoincidents);
-        void loadGraph(const std::string& filename);
+        bool loadGraph(const std::string& filename);
         void exportGraphFile(const std::string& filename, const std::vector<Motion>& motion);
         void draw(const float& wScale, const float& hScale);
         

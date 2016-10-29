@@ -127,7 +127,7 @@ const bool MotionGraphPlayer::isPlaying() const
     return this->mPlaying;
 }
 
-const bool MotionGraphPlayer::setLoop(bool flag) const
+const void MotionGraphPlayer::setLoop(bool flag) const
 {
     for (int i=0; i<this->getNumMotions(); i++) {
         mBvh[i].setLoop(flag);

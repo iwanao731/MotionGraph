@@ -4,6 +4,7 @@
 
 #define BUILD_GRAPH
 #define MGPLAY
+#define SMG_VIEWER
 //--------------------------------------------------------------
 void ofApp::setup(){
     
@@ -24,7 +25,7 @@ void ofApp::setup(){
         mMotionGraph.addMotion(motion);
     }
 
-    mMotionGraph.constructGraph(Threshold(1500.f), NCoincidents(5));    // 500, 5 is easy for DEBUG
+    mMotionGraph.constructGraph(Threshold(500.f), NCoincidents(5));    // 500, 5 is easy for DEBUG
     mMotionGraph.exportGraph("sample");
     mMotionGraph.clear();
 #endif
@@ -35,10 +36,12 @@ void ofApp::setup(){
     mMGPlayer.setLoop(false);
     mMGPlayer.play();
 #endif
-    
+  
+#ifdef SMG_VIEWER
     // secondary motion graph
     SMG.loadGraph("sample_graph.txt");
     SMG.constructeGraph(0, 0);
+#endif
 }
 
 //--------------------------------------------------------------
@@ -84,7 +87,9 @@ void ofApp::draw(){
     ofDrawBitmapString("start / stop (space) : " + ofToString(mMGPlayer.isPlaying() == true ? "playing" : "stop"), ofGetWidth()-300, 140);
 #endif
     
+#ifdef SMG_VIEWER
     SMG.drawTree(ofGetMouseX()/100.f, ofGetMouseY()/100.f);
+#endif
 }
 
 //--------------------------------------------------------------

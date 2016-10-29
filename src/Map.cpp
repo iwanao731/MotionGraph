@@ -105,11 +105,12 @@ void Map::compareMotions(Motion& m1, Motion& m2)
         for(int j=0; j<m2.getNFrames(); j++) {
             Pose p2 = m2.getPose(j);
             map[i][j] = this->comparePoses(p1, p2);
+//			cout << map[i][j] << endl;
         }
     }
     
     // export posture error between two motion(m1 and m2) at each frame as .txt file
-    // this->exportMapFile(map, m1, m2);
+    this->exportMapFile(map, m1, m2);
 
     this->mDifferenceMap[this->mNRelations] = map;
     this->mNRelations++;
@@ -234,7 +235,7 @@ const int Map::calcMinimums(const int level, std::vector<int>& m1, std::vector<i
     }
 
     // for debug
-//    this->saveImage(transPoint, this->mDifferenceMap[level], this->mMotions.at(index1), this->mMotions.at(index2));
+    this->saveImage(transPoint, this->mDifferenceMap[level], this->mMotions.at(index1), this->mMotions.at(index2));
     
     cout << "correspondence point : " << m1.size() << "," << m2.size() << endl;
     
@@ -336,7 +337,6 @@ void Map::calcLocalMinimum(bool **transPoint, const int motionIndex, const int i
             this->calcLocalMinimum(transPoint, motionIndex, m, n, range, sizeW, sizeH);
         }else{
             transPoint[i][j] = true;
-            return true;
         }
     }
 }
