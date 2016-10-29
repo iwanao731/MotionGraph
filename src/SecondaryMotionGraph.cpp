@@ -44,12 +44,12 @@ void SMG::constructeGraph(int motionIndex, int frameIndex)
     // build initial secondary motion graph from motion graph
     this->initialization(nodeIndex);
     
-    // expand for each dead node
+//    // expand for each dead node
 //    for(int k=0; k<5; k++){
 //        cout << "error :  " << this->expansion() << endl;
 //    }
-    
-    this->merge();
+//    
+//    this->merge();
     
     std::cout << "end Construct Graph" << std::endl;
 }
@@ -62,7 +62,7 @@ void SMG::initialization(int nodeIndex)
     this->BFS(startNode);
     
     // Dead End Node make connecting to another node as Ghost Node considering to the connection of motion graph
-    //this->removeDeadEnd();  //Actually we have to choose next state of the most minimum simulation error
+    this->removeDeadEnd();  //Actually we have to choose next state of the most minimum simulation error
 }
 
 float SMG::expansion()

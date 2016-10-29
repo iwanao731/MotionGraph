@@ -2,8 +2,8 @@
 #include "Motion.h"
 #include "BVHConverter.h"
 
-#define BUILD_GRAPH
-#define MGPLAY
+//#define BUILD_GRAPH
+//#define MGPLAY
 //--------------------------------------------------------------
 void ofApp::setup(){
     
