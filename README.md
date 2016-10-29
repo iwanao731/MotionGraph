@@ -20,4 +20,8 @@ SIGGRAPH 2012
 + <a href="https://github.com/perfume-dev/example-openFrameworks">ofxBvh</a>
 + <a href="https://github.com/DigitalDanceGroup/ofxDigitalDance">ofxDigitalDance</a>
 
+## Database
++ <a href="http://www.motioncapturedata.com/2009/04/male-bvh-mocap.html">High Quority Mocap Data</a>
++ <a href="https://sites.google.com/a/cgspeed.com/cgspeed/motion-capture/3dsmax-friendly-release-of-cmu-motion-database">CMU Mocap Database(BVH)</a>
+
 
